@@ -10,6 +10,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Kinect;
@@ -26,6 +27,7 @@ namespace KinectTest
         KinectSensor _sensor;
         MultiSourceFrameReader _reader;
         IList<Body> _bodies;
+        Window1 window1 = new Window1();
 
 
         public MainWindow()
@@ -43,6 +45,7 @@ namespace KinectTest
 
                 _reader = _sensor.OpenMultiSourceFrameReader(FrameSourceTypes.Color | FrameSourceTypes.Depth | FrameSourceTypes.Infrared | FrameSourceTypes.Body);
                 _reader.MultiSourceFrameArrived += Reader_MultiSourceFrameArrived;
+                window1.Show();
             }
         }
 
@@ -119,12 +122,71 @@ namespace KinectTest
 
                                 Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
 
-                                foreach (JointType jointType in joints.Keys)
+                                Joint handLeft = joints[JointType.HandLeft];
+                                Joint wristLeft = joints[JointType.WristLeft];
+                                Joint elbowLeft = joints[JointType.ElbowLeft];
+                                Joint shoulderLeft = joints[JointType.ShoulderLeft];
+                                Joint handRight = joints[JointType.HandRight];
+                                Joint wristRight = joints[JointType.WristRight];
+                                Joint elbowRight = joints[JointType.ElbowRight];
+                                Joint shoulderRight = joints[JointType.ShoulderRight];
+                                Joint head = joints[JointType.Head];
+                                Joint spineShoulder = joints[JointType.SpineShoulder];
+                                Joint spineBase = joints[JointType.SpineBase];
+
+                                CameraSpacePoint cameraHandLeft = handLeft.Position;
+                                CameraSpacePoint cameraWristLeft = wristLeft.Position;
+                                CameraSpacePoint cameraElbowLeft = elbowLeft.Position;
+                                CameraSpacePoint cameraShoulderLeft = shoulderLeft.Position;
+                                CameraSpacePoint cameraHandRight = handRight.Position;
+                                CameraSpacePoint cameraWristRight = wristRight.Position;
+                                CameraSpacePoint cameraElbowRight = elbowRight.Position;
+                                CameraSpacePoint cameraShoulderRight = shoulderRight.Position;
+                                CameraSpacePoint cameraHead = head.Position;
+                                CameraSpacePoint cameraSpineShoulder = spineShoulder.Position;
+                                CameraSpacePoint cameraSpineBase = spineBase.Position;
+
+                                Vector3D shoulderElbowLeft = new Vector3D( Math.Round(cameraElbowLeft.X-cameraShoulderLeft.X, 3),  Math.Round(cameraElbowLeft.Y-cameraShoulderLeft.Y, 3),  Math.Round(cameraElbowLeft.Z-cameraShoulderLeft.Z, 3));
+                                Vector3D elbowWristLeft = new Vector3D( Math.Round(cameraWristLeft.X-cameraElbowLeft.X, 3),  Math.Round(cameraWristLeft.Y-cameraElbowLeft.Y, 3),  Math.Round(cameraWristLeft.Z-cameraElbowLeft.Z, 3));
+                                Vector3D shoulderElbowRight = new Vector3D(Math.Round(cameraElbowRight.X - cameraShoulderRight.X, 3), Math.Round(cameraElbowRight.Y - cameraShoulderRight.Y, 3), Math.Round(cameraElbowRight.Z - cameraShoulderRight.Z, 3));
+                                Vector3D elbowWristRight = new Vector3D(Math.Round(cameraWristRight.X - cameraElbowRight.X, 3), Math.Round(cameraWristRight.Y - cameraElbowRight.Y, 3), Math.Round(cameraWristRight.Z - cameraElbowRight.Z, 3));
+                                Vector3D torso = new Vector3D(Math.Round(cameraSpineBase.X - cameraSpineShoulder.X, 3), Math.Round(cameraSpineBase.Y - cameraSpineShoulder.Y, 3), Math.Round(cameraSpineBase.Z - cameraSpineShoulder.Z, 3));
+
+                                var scalarSEEWLeft = Vector3D.DotProduct(shoulderElbowLeft, elbowWristLeft);
+                                var scalarEWTLeft = Vector3D.DotProduct(elbowWristLeft, torso);
+                                var scalarSEEWRight = Vector3D.DotProduct(shoulderElbowRight, elbowWristRight);
+                                var scalarEWTRight = Vector3D.DotProduct(elbowWristRight, torso);
+
+                                Console.WriteLine("Right wrist : X : {0} \" Y : {1} \" : {2}", cameraWristRight.X, cameraWristRight.Y, cameraWristRight.Z);
+
+                                window1.update_pointCoordiantes(String.Format("Left hand : X : {0} Y : {1} Z : {2} \n Left wrsit : X : {3} Y : {4} Z : {5} \n Left elbow : X : {6} Y : {7} Z : {8} \n Left shoulder : X : {9} Y : {10} Z : {11} \n", Math.Round(cameraHandLeft.X, 3), Math.Round(cameraHandLeft.Y, 3), Math.Round(cameraHandLeft.Z, 3), Math.Round(cameraWristLeft.X, 3), Math.Round(cameraWristLeft.Y, 3), Math.Round(cameraWristLeft.Z, 3), Math.Round(cameraElbowLeft.X, 3), Math.Round(cameraElbowLeft.Y, 3), Math.Round(cameraElbowLeft.Z, 3), Math.Round(cameraShoulderLeft.X, 3), Math.Round(cameraShoulderLeft.Y, 3), Math.Round(cameraShoulderLeft.Z, 3)));
+                                window1.update_vectors(String.Format("Left shoulder Elbow vector : X {0} Y : {1} Z : {2} \n Left elbow Wrist vector : X : {3} Y : {4} Z : {5} \n Left EWT dot product {6} \n Right EWT dot product {7}", shoulderElbowLeft.X, shoulderElbowLeft.Y, shoulderElbowLeft.Z, elbowWristLeft.X, elbowWristLeft.Y, elbowWristLeft.Z, scalarEWTLeft, scalarEWTRight));
+                                
+
+                                if(Math.Abs(scalarEWTRight) < 0.12)
                                 {
-                                    Console.WriteLine("Start body");
-                                    Console.WriteLine("Joint position X : {0} \" Joint position Y : {1} \" Joint position Z : {2}", joints[jointType].Position.X, joints[jointType].Position.Y, joints[jointType].Position.Z);
-                                    Console.WriteLine("End body");
+                                    window1.update_armtracked("Right arm tracked");
                                 }
+                                else
+                                {
+                                    if (Math.Abs(scalarEWTLeft) < 0.12)
+                                    {
+                                        window1.update_armtracked("Left arm tracked");
+                                    }
+                                    else
+                                    {
+                                        window1.update_armtracked("No arm tracked");
+                                    }
+                                }
+
+
+                                /*foreach (JointType jointType in joints.Keys)
+                                {
+                                    Console.WriteLine("Start joint");
+                                    Console.WriteLine("Joint position X : {0} \" Joint position Y : {1} \" Joint position Z : {2}", joints[jointType].Position.X, joints[jointType].Position.Y, joints[jointType].Position.Z);
+                                    Console.WriteLine("End joint");
+                                    
+                                }*/
                             }
                         }
                     }

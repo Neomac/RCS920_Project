@@ -38,7 +38,6 @@ namespace KinectStreams
         public MainWindow()
         {
             InitializeComponent();
-            System.Diagnostics.Process.Start(@"C:\Windows\System32\Kinect\KinectService.exe");
         }
 
         #endregion
