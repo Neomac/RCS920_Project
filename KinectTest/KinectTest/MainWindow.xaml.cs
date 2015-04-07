@@ -27,13 +27,35 @@ namespace KinectTest
         KinectSensor _sensor;
         MultiSourceFrameReader _reader;
         IList<Body> _bodies;
-        Window1 window1 = new Window1();
+        InformationWindow informationWindow = new InformationWindow();
+        ControlCenterWindow controlCenterWindow = new ControlCenterWindow();
 
+        //Control Center variables
+        string controlCenterMode;
+        string controlCenterSide;
 
         public MainWindow()
         {
             InitializeComponent();
             //System.Diagnostics.Process.Start(@"C:\Windows\System32\Kinect\KinectService.exe");
+            controlCenterWindow.SettingUpdated += new EventHandler<ControlCenterEventArgs>(controlCenterWindow_SettingUpdated); 
+            informationWindow.Show();
+            controlCenterWindow.Show();
+        }
+
+        private void controlCenterWindow_SettingUpdated(object sender, ControlCenterEventArgs e)
+        {
+            if (e != null && e.mode != null)
+            {
+                controlCenterMode = e.mode;
+                informationWindow.setMode(e.mode);
+                if (e != null && e.side != null)
+                {
+                    controlCenterSide = e.side;
+                    informationWindow.setMode(e.side);
+                }
+            }
+
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -45,7 +67,7 @@ namespace KinectTest
 
                 _reader = _sensor.OpenMultiSourceFrameReader(FrameSourceTypes.Color | FrameSourceTypes.Depth | FrameSourceTypes.Infrared | FrameSourceTypes.Body);
                 _reader.MultiSourceFrameArrived += Reader_MultiSourceFrameArrived;
-                window1.Show();
+
             }
         }
 
@@ -120,9 +142,13 @@ namespace KinectTest
                             {
                                 ArmTracked armTracked = new ArmTracked();
 
-                                armTracked.updateValues(body);
+                                //Get or update the value of the tracked arm
+                                armTracked.updateValues(body, controlCenterMode, controlCenterSide);
 
-                                window1.updateArmTracked(armTracked);
+                                //Update the information windows
+                                informationWindow.updateArmTracked(armTracked);
+
+                                //Console.WriteLine(controlCenterMode + "Test");
                             }
                         }
                     }
@@ -228,6 +254,16 @@ namespace KinectTest
         private void Infrared_Click(object sender, RoutedEventArgs e)
         {
             _mode = Mode.Infrared;
+        }
+
+        public string getControlCenterMode()
+        {
+            return controlCenterMode;
+        }
+
+        public string getControlCenterSide()
+        {
+            return controlCenterSide;
         }
     }
 
