@@ -4,9 +4,8 @@
         Title="Window1" Height="400" Width="400">
     <Grid>
         <StackPanel>
-            <TextBlock TextWrapping="Wrap" Text="No body detected" Name="pointCoordinates"/>
-            <TextBlock TextWrapping="Wrap" Text="TextBlock" Name="vectors"/>
-            <TextBlock TextWrapping="Wrap" Text="TextBlock" Name="armtracked"/>
+            <TextBlock TextWrapping="Wrap" Text="No body detected" Name="side"/>
+            <TextBlock TextWrapping="Wrap" Text="" Name="coordinates"/>
         </StackPanel>
     </Grid>
 </Window>

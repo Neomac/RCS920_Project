@@ -11,6 +11,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Microsoft.Kinect;
 
 namespace KinectTest
 {
@@ -24,18 +25,10 @@ namespace KinectTest
             InitializeComponent();
         }
 
-        public void update_pointCoordiantes(string text)
+        public void updateArmTracked(ArmTracked armTracked)
         {
-            pointCoordinates.Text = text;
-        }
-
-        public void update_vectors(string text)
-        {
-            vectors.Text = text;
-        }
-        public void update_armtracked(string text)
-        {
-            armtracked.Text = text;
+            side.Text = String.Format("The {0} side is tracked.", armTracked.getSide());
+            coordinates.Text = String.Format("Coordinates of the differentes joint tracked : \n Hand : X={0} Y={1} Z={2} \n Wrist : X={3} Y={4} Z={5} \n Elbow : X={6} Y={7} Z={8} \n Shoulder : X={9} Y={10} Z={11}", armTracked.getHand().Position.X, armTracked.getHand().Position.Y, armTracked.getHand().Position.Z, armTracked.getWrist().Position.X, armTracked.getWrist().Position.Y, armTracked.getWrist().Position.Z, armTracked.getElbow().Position.X, armTracked.getElbow().Position.Y, armTracked.getElbow().Position.Z, armTracked.getShoulder().Position.X, armTracked.getShoulder().Position.Y, armTracked.getShoulder().Position.Z);
         }
     }
 }
