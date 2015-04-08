@@ -8,7 +8,8 @@ namespace KinectTest
 {
     public class ControlCenterEventArgs : EventArgs
     {
-        public string mode { get; set; }
+        public string sideMode { get; set; }
         public string side { get; set; }
+        public string trackingMode { get; set; }
     }
 }

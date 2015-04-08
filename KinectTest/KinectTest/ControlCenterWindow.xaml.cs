@@ -20,35 +20,71 @@ namespace KinectTest
     public partial class ControlCenterWindow : Window
     {
         public event EventHandler<ControlCenterEventArgs> SettingUpdated;
-        string mode;
+        string sideMode;
         string side;
+        string trackingMode;
 
         public ControlCenterWindow()
         {
             InitializeComponent();
         }
 
-        private void radioAuto_Checked(object sender, RoutedEventArgs e)
+        private void RadioMimicking_Checked(object sender, RoutedEventArgs e)
         {
-            mode = "Auto";
-            sideSelection.Visibility = System.Windows.Visibility.Hidden;
+            trackingMode = "Mimicking";
+            sideMode = "";
+            side = "";
+            textSideModeSelection.Visibility = System.Windows.Visibility.Visible;
+            radioAuto.Visibility = System.Windows.Visibility.Visible;
+            radioManual.Visibility = System.Windows.Visibility.Visible;
+            textSideSelection.Visibility = System.Windows.Visibility.Hidden;
             radioRight.Visibility = System.Windows.Visibility.Hidden;
             radioLeft.Visibility = System.Windows.Visibility.Hidden;
-
             ControlCenterEventArgs ccea = new ControlCenterEventArgs();
-            ccea.mode = mode;
+            ccea.trackingMode = trackingMode;
+            OnModeUpdate(ccea);
+        }
+
+        private void RadioMovingObject_Checked(object sender, RoutedEventArgs e)
+        {
+            trackingMode = "MovingObject";
+            sideMode = "";
+            side = "";
+            textSideModeSelection.Visibility = System.Windows.Visibility.Visible;
+            radioAuto.Visibility = System.Windows.Visibility.Visible;
+            radioManual.Visibility = System.Windows.Visibility.Hidden;
+            textSideSelection.Visibility = System.Windows.Visibility.Hidden;
+            radioRight.Visibility = System.Windows.Visibility.Hidden;
+            radioLeft.Visibility = System.Windows.Visibility.Hidden;
+            ControlCenterEventArgs ccea = new ControlCenterEventArgs();
+            ccea.trackingMode = trackingMode;
+            OnModeUpdate(ccea);
+        }
+
+        private void radioAuto_Checked(object sender, RoutedEventArgs e)
+        {
+            sideMode = "Auto";
+            side = "";
+            textSideSelection.Visibility = System.Windows.Visibility.Hidden;
+            radioRight.Visibility = System.Windows.Visibility.Hidden;
+            radioLeft.Visibility = System.Windows.Visibility.Hidden;
+            ControlCenterEventArgs ccea = new ControlCenterEventArgs();
+            ccea.sideMode = sideMode;
+            ccea.side = side;
             OnModeUpdate(ccea);
         }
 
         private void radioManual_Checked(object sender, RoutedEventArgs e)
         {
-            mode = "Manual";
-            sideSelection.Visibility = System.Windows.Visibility.Visible;
+            sideMode = "Manual";
+            side = "";
+            textSideSelection.Visibility = System.Windows.Visibility.Visible;
             radioRight.Visibility=  System.Windows.Visibility.Visible;
             radioLeft.Visibility = System.Windows.Visibility.Visible;
 
             ControlCenterEventArgs ccea = new ControlCenterEventArgs();
-            ccea.mode = mode;
+            ccea.sideMode = sideMode;
+            ccea.side = side;
             OnModeUpdate(ccea);
         }
 
@@ -56,7 +92,7 @@ namespace KinectTest
         {
             side = "Right";
             ControlCenterEventArgs ccea = new ControlCenterEventArgs();
-            ccea.mode = "Manual";
+            ccea.sideMode = "Manual";
             ccea.side = side;
             OnModeUpdate(ccea);
         }
@@ -65,7 +101,7 @@ namespace KinectTest
         {
             side = "Left";
             ControlCenterEventArgs ccea = new ControlCenterEventArgs();
-            ccea.mode = "Manual";
+            ccea.sideMode = "Manual";
             ccea.side = side;
             OnModeUpdate(ccea);
         }
@@ -78,7 +114,7 @@ namespace KinectTest
             }
         }
 
-        protected virtual void OnSideUpdate(ControlCenterEventArgs e)
+        protected virtual void OnSideModeUpdate(ControlCenterEventArgs e)
         {
             if (SettingUpdated != null)
             {
@@ -86,14 +122,27 @@ namespace KinectTest
             }
         }
 
-        public string getMode()
+        protected virtual void OnTrackingModeUpdate(ControlCenterEventArgs e)
         {
-            return mode;
+            if (SettingUpdated != null)
+            {
+                SettingUpdated(this, e);
+            }
+        }
+
+        public string getSideMode()
+        {
+            return sideMode;
         }
 
         public string getSide()
         {
             return side;
+        }
+
+        public string getTrackingMode()
+        {
+            return trackingMode;
         }
     }
 }

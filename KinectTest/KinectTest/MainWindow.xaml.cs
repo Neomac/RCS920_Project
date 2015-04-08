@@ -31,8 +31,9 @@ namespace KinectTest
         ControlCenterWindow controlCenterWindow = new ControlCenterWindow();
 
         //Control Center variables
-        string controlCenterMode;
+        string controlCenterSideMode;
         string controlCenterSide;
+        string controlCenterTrackingMode;
 
         public MainWindow()
         {
@@ -45,17 +46,21 @@ namespace KinectTest
 
         private void controlCenterWindow_SettingUpdated(object sender, ControlCenterEventArgs e)
         {
-            if (e != null && e.mode != null)
+            if (e != null && e.trackingMode != null)
             {
-                controlCenterMode = e.mode;
-                informationWindow.setMode(e.mode);
-                if (e != null && e.side != null)
-                {
-                    controlCenterSide = e.side;
-                    informationWindow.setMode(e.side);
-                }
+                controlCenterTrackingMode = e.trackingMode;
+                informationWindow.setTrackingMode(e.trackingMode);
             }
-
+            if (e!= null && e.sideMode != null)
+            {
+                controlCenterSideMode = e.sideMode;
+                informationWindow.setSideMode(e.sideMode);
+            }
+            if (e!= null && e.side != null)
+            {
+                controlCenterSide = e.side;
+                informationWindow.setSide(e.side);
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -143,7 +148,7 @@ namespace KinectTest
                                 ArmTracked armTracked = new ArmTracked();
 
                                 //Get or update the value of the tracked arm
-                                armTracked.updateValues(body, controlCenterMode, controlCenterSide);
+                                armTracked.updateValues(body, controlCenterTrackingMode, controlCenterSideMode, controlCenterSide);
 
                                 //Update the information windows
                                 informationWindow.updateArmTracked(armTracked);
@@ -258,7 +263,7 @@ namespace KinectTest
 
         public string getControlCenterMode()
         {
-            return controlCenterMode;
+            return controlCenterSideMode;
         }
 
         public string getControlCenterSide()

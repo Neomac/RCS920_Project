@@ -56,7 +56,7 @@ namespace KinectTest
         /// Update the value of the tracked arm
         /// </summary>
         /// <param name="body">The body to track</param>
-        public void updateValues(Body body, string inputMode, string inputSide)
+        public void updateValues(Body body, string inputTrackingMode, string inputSideMode, string inputSide)
         {
             IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
             Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
@@ -87,7 +87,7 @@ namespace KinectTest
             CameraSpacePoint cameraSpineShoulder = spineShoulder.Position;
             CameraSpacePoint cameraSpineBase = spineBase.Position;
 
-            if (inputMode == "Auto")
+            if (inputSideMode == "Auto")
             {
                 //Check which arm to track
 
@@ -105,70 +105,97 @@ namespace KinectTest
 
                 if (Math.Abs(scalarEWTRight) < threshold && Math.Abs(scalarEWTLeft) > threshold)
                 {
-                    side = "Right";
-                    hand = handRight;
-                    wrist = wristRight;
-                    elbow = elbowRight;
-                    shoulder = shoulderRight;
-                    handState = body.HandRightState;
+                    updateValuesArm(body, inputTrackingMode, "Right");
+                }
+                else if (Math.Abs(scalarEWTLeft) < threshold && Math.Abs(scalarEWTRight) > threshold)
+                {
+                    updateValuesArm(body, inputTrackingMode, "Left");
+                }
+                else if (Math.Abs(scalarEWTRight) < threshold && Math.Abs(scalarEWTLeft) < threshold)
+                {
+                    updateValuesArm(body, inputTrackingMode, "Right");
                 }
                 else
                 {
-                    if (Math.Abs(scalarEWTLeft) < threshold && Math.Abs(scalarEWTRight) > threshold)
-                    {
-                        side = "Left";
-                        hand = handLeft;
-                        wrist = wristLeft;
-                        elbow = elbowLeft;
-                        shoulder = shoulderLeft;
-                        handState = body.HandLeftState;
-                    }
-                    else
-                    {
-                        if (Math.Abs(scalarEWTRight) < threshold && Math.Abs(scalarEWTLeft) < threshold)
-                        {
-                            side = "Right";
-                            hand = handRight;
-                            wrist = wristRight;
-                            elbow = elbowRight;
-                            shoulder = shoulderRight;
-                            handState = body.HandRightState;
-                        }
-                        else
-                        {
-                            side = "None";
-                            hand = new Joint();
-                            wrist = new Joint();
-                            elbow = new Joint();
-                            shoulder = new Joint();
-                            handState = new HandState();
-                        }
-                    }
+                    updateValuesArm(body, inputTrackingMode, "None");
                 }
             }
 
-            if (inputMode == "Manual")
+            if (inputSideMode == "Manual")
             {
                 if (inputSide == "Right")
                 {
-                    side = "Right";
-                    hand = handRight;
-                    wrist = wristRight;
-                    elbow = elbowRight;
-                    shoulder = shoulderRight;
-                    handState = body.HandRightState;
+                    updateValuesArm(body, inputTrackingMode, "Right");
                 }
                 if (inputSide == "Left")
                 {
-                    side = "Left";
-                    hand = handLeft;
-                    wrist = wristLeft;
-                    elbow = elbowLeft;
-                    shoulder = shoulderLeft;
-                    handState = body.HandLeftState;
+                    updateValuesArm(body, inputTrackingMode, "Left");
                 }
             }
+        }
 
+        private void updateValuesArm(Body body, string inputTrackingMode, string inputSide)
+        {
+            IReadOnlyDictionary<JointType, Joint> joints = body.Joints;
+            Dictionary<JointType, Point> jointPoints = new Dictionary<JointType, Point>();
+            if (inputTrackingMode == "Mimicking")
+	        {
+		        if (inputSide == "Right")
+	            {
+		            side = "Right";
+                    hand = joints[JointType.HandRight];
+                    wrist = joints[JointType.WristRight];;
+                    elbow = joints[JointType.ElbowRight];
+                    shoulder = joints[JointType.ShoulderRight];
+                    handState = body.HandRightState;
+	            }
+                else if (inputSide == "Left")
+	            {
+		            side = "Left";
+                    hand = joints[JointType.HandLeft];
+                    wrist = joints[JointType.WristLeft];;
+                    elbow = joints[JointType.ElbowLeft];
+                    shoulder = joints[JointType.ShoulderLeft];
+                    handState = body.HandLeftState;
+	            }
+                else
+	            {
+		            side = "None";
+                    hand = new Joint();
+                    wrist = new Joint();
+                    elbow = new Joint();
+                    shoulder = new Joint();
+                    handState = new HandState();
+	            }
+	        }
+            if (inputTrackingMode == "MovingObject")
+	        {
+		        if (inputSide == "Right")
+	            {
+		            side = "Right";
+                    hand = joints[JointType.HandRight];
+                    elbow = new Joint();
+                    shoulder = new Joint();
+                    handState = body.HandLeftState;
+	            }
+                if (inputSide == "Left")
+	            {
+		            side = "Left";
+                    hand = joints[JointType.HandLeft];
+                    elbow = new Joint();
+                    shoulder = new Joint();
+                    handState = body.HandRightState;
+	            }
+                if (inputSide == "None")
+	            {
+		            side = "None";
+                    hand = new Joint();
+                    wrist = new Joint();
+                    elbow = new Joint();
+                    shoulder = new Joint();
+                    handState = new HandState();
+	            }
+	        }
         }
 
         //Getters

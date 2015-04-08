@@ -3,11 +3,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="ControlCenterWindow" Height="300" Width="300">
     <Grid>
-        <TextBlock HorizontalAlignment="Left" Margin="10,25,0,0" TextWrapping="Wrap" Text="Select your side detection mode :" VerticalAlignment="Top"/>
-        <RadioButton GroupName="ModeSelection" Content="Auto" HorizontalAlignment="Left" Margin="10,41,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.729,0.933" Name="radioAuto" Checked="radioAuto_Checked"/>
-        <RadioButton GroupName="ModeSelection" Content="Manual" HorizontalAlignment="Left" Margin="10,61,0,0" VerticalAlignment="Top" Name="radioManual" Checked="radioManual_Checked"/>
-        <TextBlock HorizontalAlignment="Left" Margin="10,90,0,0" TextWrapping="Wrap" Text="Select the side to track :" VerticalAlignment="Top" Name="sideSelection" Visibility="Hidden"/>
-        <RadioButton GroupName="SideSelection" Content="Right" HorizontalAlignment="Left" Margin="10,111,0,0" VerticalAlignment="Top" Name="radioRight" Checked="radioRight_Checked" Visibility="Hidden"/>
-        <RadioButton GroupName="SideSelection" Content="Left" HorizontalAlignment="Left" Margin="10,131,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.153,-0.8" Name="radioLeft" Checked="radioLeft_Checked" Visibility="Hidden"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Select your tracking mode :" VerticalAlignment="Top"/>
+        <RadioButton GroupName="TrackingModeSelection" Content="Mimicking" HorizontalAlignment="Left" Margin="10,31,0,0" VerticalAlignment="Top" Checked="RadioMimicking_Checked" Name="radioMimicking"/>
+        <RadioButton GroupName="TrackingModeSelection" Content="Moving object" HorizontalAlignment="Left" Margin="10,51,0,0" VerticalAlignment="Top" Checked="RadioMovingObject_Checked" Name="radioMovingObject"/>
+        <TextBlock HorizontalAlignment="Left" Margin="12,83,0,0" TextWrapping="Wrap" Text="Select your side detection mode :" VerticalAlignment="Top" Name="textSideModeSelection" Visibility="Hidden"/>
+        <RadioButton GroupName="ModeSelection" Content="Auto" HorizontalAlignment="Left" Margin="10,104,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.729,0.933" Name="radioAuto" Checked="radioAuto_Checked" Visibility="Hidden"/>
+        <RadioButton GroupName="ModeSelection" Content="Manual" HorizontalAlignment="Left" Margin="10,124,0,0" VerticalAlignment="Top" Name="radioManual" Checked="radioManual_Checked" Visibility="Hidden"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,158,0,0" TextWrapping="Wrap" Text="Select the side to track :" VerticalAlignment="Top" Name="textSideSelection" Visibility="Hidden"/>
+        <RadioButton GroupName="SideSelection" Content="Right" HorizontalAlignment="Left" Margin="10,179,0,0" VerticalAlignment="Top" Name="radioRight" Checked="radioRight_Checked" Visibility="Hidden"/>
+        <RadioButton GroupName="SideSelection" Content="Left" HorizontalAlignment="Left" Margin="10,199,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.153,-0.8" Name="radioLeft" Checked="radioLeft_Checked" Visibility="Hidden"/>
     </Grid>
 </Window>
