@@ -11,5 +11,6 @@ namespace KinectTest
         public string sideMode { get; set; }
         public string side { get; set; }
         public string trackingMode { get; set; }
+        public string bodyNumberToTrack { get; set; }
     }
 }

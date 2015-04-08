@@ -34,6 +34,54 @@ namespace KinectTest
         string controlCenterSideMode;
         string controlCenterSide;
         string controlCenterTrackingMode;
+        string controlCenterBodyNumberToTrack;
+
+        private static readonly byte[] BodyColor =
+        {
+            0,
+            255,
+            150,
+            255,
+            80,
+            200,
+            50,
+            230,
+            190,
+            255
+        };
+
+        /// <summary>
+        /// Drawing group for body rendering output
+        /// </summary>
+        private DrawingGroup drawingGroup;
+
+        /// <summary>
+        /// Drawing image that we will display
+        /// </summary>
+        private DrawingImage imageSource;
+
+        /// <summary>
+        /// Width of display (depth space)
+        /// </summary>
+        private int displayWidth;
+
+        /// <summary>
+        /// Height of display (depth space)
+        /// </summary>
+        private int displayHeight;
+
+        /// <summary>
+        /// Active Kinect sensor
+        /// </summary>
+        private KinectSensor kinectSensor = null;
+
+        private int test = 0;
+
+
+
+
+
+
 
         public MainWindow()
         {
@@ -42,6 +90,14 @@ namespace KinectTest
             controlCenterWindow.SettingUpdated += new EventHandler<ControlCenterEventArgs>(controlCenterWindow_SettingUpdated); 
             informationWindow.Show();
             controlCenterWindow.Show();
+
+            // one sensor is currently supported
+            this.kinectSensor = KinectSensor.GetDefault();
+            // get the depth (display) extents
+            FrameDescription frameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
+            // get size of joint space
+            this.displayWidth = frameDescription.Width;
+            this.displayHeight = frameDescription.Height;
         }
 
         private void controlCenterWindow_SettingUpdated(object sender, ControlCenterEventArgs e)
@@ -60,6 +116,10 @@ namespace KinectTest
             {
                 controlCenterSide = e.side;
                 informationWindow.setSide(e.side);
+            }
+            if (e!= null && e.bodyNumberToTrack != null)
+            {
+                controlCenterBodyNumberToTrack = e.bodyNumberToTrack;
             }
         }
 
@@ -93,6 +153,7 @@ namespace KinectTest
         {
             //Get a reference to the multi-frame
             var reference = e.FrameReference.AcquireFrame();
+
 
             //Open color frame
             using (var frame = reference.ColorFrameReference.AcquireFrame())
@@ -133,29 +194,52 @@ namespace KinectTest
             //Output body variables in the console
             using (var frame = reference.BodyFrameReference.AcquireFrame())
             {
+                var counterColor = 0;
+
                 if (frame != null)
                 {
                     _bodies = new Body[frame.BodyFrameSource.BodyCount];
 
                     frame.GetAndRefreshBodyData(_bodies);
-
+                    canvasUser.Children.Clear();
                     foreach (var body in _bodies)
                     {
                         if (body != null)
                         {
                             if (body.IsTracked)
                             {
-                                ArmTracked armTracked = new ArmTracked();
+                                Joint headJoint = body.Joints[JointType.Head];
 
-                                //Get or update the value of the tracked arm
-                                armTracked.updateValues(body, controlCenterTrackingMode, controlCenterSideMode, controlCenterSide);
-
-                                //Update the information windows
-                                informationWindow.updateArmTracked(armTracked);
-
-                                //Console.WriteLine(controlCenterMode + "Test");
+                                if (headJoint.TrackingState == TrackingState.Tracked)
+	                            {
+                                    DepthSpacePoint dsp = _sensor.CoordinateMapper.MapCameraPointToDepthSpace(headJoint.Position);
+                                    TextBlock userNumber = new TextBlock();
+                                    userNumber.Text = String.Format("{0}", _bodies.IndexOf(body)+1);
+                                    userNumber.Foreground = new SolidColorBrush(Color.FromArgb(255, BodyColor[counterColor], BodyColor[counterColor + 1], BodyColor[counterColor + 2]));
+                                    canvasUser.Children.Add(userNumber);
+                                    Canvas.SetLeft(userNumber, dsp.X - 10);
+                                    Canvas.SetTop(userNumber, dsp.Y - 50);
+                                    counterColor +=1;
+                                    if (counterColor > 9)
+	                                {
+		                                counterColor = 0;
+	                                }
+	                            }
                             }
                         }
+                    }
+
+                    if (controlCenterBodyNumberToTrack != null)
+                    {
+                        ArmTracked armTracked = new ArmTracked();
+
+                        Body bodyTest = _bodies.ElementAt(test);
+
+                        //Get or update the value of the tracked arm
+                        armTracked.updateValues(_bodies.ElementAt(Convert.ToInt32(controlCenterBodyNumberToTrack) - 1), controlCenterTrackingMode, controlCenterSideMode, controlCenterSide);
+
+                        //Update the information windows
+                        informationWindow.updateArmTracked(armTracked);
                     }
                 }
             }

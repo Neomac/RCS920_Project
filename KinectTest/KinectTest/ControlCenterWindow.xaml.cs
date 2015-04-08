@@ -23,6 +23,7 @@ namespace KinectTest
         string sideMode;
         string side;
         string trackingMode;
+        string bodyNumberTotrack;
 
         public ControlCenterWindow()
         {
@@ -117,6 +118,14 @@ namespace KinectTest
             OnModeUpdate(ccea);
         }
 
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            bodyNumberTotrack = bodyNumberToTrack.Text;
+            ControlCenterEventArgs ccea = new ControlCenterEventArgs();
+            ccea.bodyNumberToTrack = bodyNumberTotrack;
+            OnModeUpdate(ccea);
+        }
+
         protected virtual void OnModeUpdate(ControlCenterEventArgs e)
         {
             if (SettingUpdated != null)
@@ -134,6 +143,14 @@ namespace KinectTest
         }
 
         protected virtual void OnTrackingModeUpdate(ControlCenterEventArgs e)
+        {
+            if (SettingUpdated != null)
+            {
+                SettingUpdated(this, e);
+            }
+        }
+
+        protected virtual void OnBodyNumberToTrackUpdate(ControlCenterEventArgs e)
         {
             if (SettingUpdated != null)
             {

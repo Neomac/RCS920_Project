@@ -3,8 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Kinect | Color, Depth, Infrared" Height="480" Width="640" Loaded="Window_Loaded" Closed="Window_Closed">
     <Grid>
-        <Image Name="camera" />
-        <Canvas Name="canvas" />
+        <Image Name="camera" Width="512" Height="424" />
+        <Canvas Name="canvasUser" Width="512" Height="424"/>
         <Grid>
             <StackPanel>
                 <Button Content="Color" Click="Color_Click" />
