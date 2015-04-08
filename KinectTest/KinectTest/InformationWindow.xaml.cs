@@ -31,7 +31,7 @@ namespace KinectTest
 
         public void updateArmTracked(ArmTracked armTracked)
         {
-            if (sideMode != null)
+            if (trackingMode == "Mimicking")
             {
                 if (sideMode == "Auto")
                 {
@@ -39,10 +39,9 @@ namespace KinectTest
                     coordinatesText.Text = String.Format("Coordinates of the differentes joint tracked : \n Hand : X={0} Y={1} Z={2} \n Wrist : X={3} Y={4} Z={5} \n Elbow : X={6} Y={7} Z={8} \n Shoulder : X={9} Y={10} Z={11}", armTracked.getHand().Position.X, armTracked.getHand().Position.Y, armTracked.getHand().Position.Z, armTracked.getWrist().Position.X, armTracked.getWrist().Position.Y, armTracked.getWrist().Position.Z, armTracked.getElbow().Position.X, armTracked.getElbow().Position.Y, armTracked.getElbow().Position.Z, armTracked.getShoulder().Position.X, armTracked.getShoulder().Position.Y, armTracked.getShoulder().Position.Z);
                     hand_StateText.Text = String.Format("The hand is {0}", armTracked.getHandState().ToString());
                 }
-
-                if (sideMode == "Manual")
+                else if (sideMode == "Manual")
                 {
-                    if (side == null)
+                    if (side == "")
                     {
                         sideText.Text = "Select a side";
                         coordinatesText.Text = "";
@@ -55,11 +54,35 @@ namespace KinectTest
                         hand_StateText.Text = String.Format("The hand is {0}", armTracked.getHandState().ToString());
                     }
                 }
+                else
+                {
+                    sideText.Text = "Select a mode";
+                    coordinatesText.Text = "";
+                    hand_StateText.Text = "";
+                }
+            }
+            else if (trackingMode == "MovingObject")
+            {
+                if (sideMode == "Auto")
+                {
+                    sideText.Text = String.Format("The {0} side is tracked.", armTracked.getSide());
+                    coordinatesText.Text = String.Format("Coordinates of the differentes joint tracked : \n Hand : X={0} Y={1} Z={2}", armTracked.getHand().Position.X, armTracked.getHand().Position.Y, armTracked.getHand().Position.Z);
+                    hand_StateText.Text = String.Format("The hand is {0}", armTracked.getHandState().ToString());
+                }
+                else
+                {
+                    sideText.Text = "Select a mode";
+                    coordinatesText.Text = "";
+                    hand_StateText.Text = "";
+                }
             }
             else
             {
-                sideText.Text = "Select a mode";
+                sideText.Text = "Select a tracking mode";
+                coordinatesText.Text = "";
+                hand_StateText.Text = "";
             }
+            
 
             
         }

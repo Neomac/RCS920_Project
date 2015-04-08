@@ -36,28 +36,36 @@ namespace KinectTest
             side = "";
             textSideModeSelection.Visibility = System.Windows.Visibility.Visible;
             radioAuto.Visibility = System.Windows.Visibility.Visible;
+            radioAuto.IsChecked = false;
             radioManual.Visibility = System.Windows.Visibility.Visible;
+            radioManual.IsChecked = false;
             textSideSelection.Visibility = System.Windows.Visibility.Hidden;
             radioRight.Visibility = System.Windows.Visibility.Hidden;
             radioLeft.Visibility = System.Windows.Visibility.Hidden;
             ControlCenterEventArgs ccea = new ControlCenterEventArgs();
             ccea.trackingMode = trackingMode;
+            ccea.sideMode = sideMode;
+            ccea.side = side;
             OnModeUpdate(ccea);
         }
 
         private void RadioMovingObject_Checked(object sender, RoutedEventArgs e)
         {
             trackingMode = "MovingObject";
-            sideMode = "";
+            sideMode = "Auto";
             side = "";
             textSideModeSelection.Visibility = System.Windows.Visibility.Visible;
             radioAuto.Visibility = System.Windows.Visibility.Visible;
+            radioAuto.IsChecked = true;
             radioManual.Visibility = System.Windows.Visibility.Hidden;
+            radioManual.IsChecked = false;
             textSideSelection.Visibility = System.Windows.Visibility.Hidden;
             radioRight.Visibility = System.Windows.Visibility.Hidden;
             radioLeft.Visibility = System.Windows.Visibility.Hidden;
             ControlCenterEventArgs ccea = new ControlCenterEventArgs();
             ccea.trackingMode = trackingMode;
+            ccea.sideMode = sideMode;
+            ccea.side = side;
             OnModeUpdate(ccea);
         }
 
@@ -67,7 +75,9 @@ namespace KinectTest
             side = "";
             textSideSelection.Visibility = System.Windows.Visibility.Hidden;
             radioRight.Visibility = System.Windows.Visibility.Hidden;
+            radioRight.IsChecked = false;
             radioLeft.Visibility = System.Windows.Visibility.Hidden;
+            radioLeft.IsChecked = false;
             ControlCenterEventArgs ccea = new ControlCenterEventArgs();
             ccea.sideMode = sideMode;
             ccea.side = side;
@@ -80,8 +90,9 @@ namespace KinectTest
             side = "";
             textSideSelection.Visibility = System.Windows.Visibility.Visible;
             radioRight.Visibility=  System.Windows.Visibility.Visible;
+            radioRight.IsChecked = false;
             radioLeft.Visibility = System.Windows.Visibility.Visible;
-
+            radioLeft.IsChecked = false;
             ControlCenterEventArgs ccea = new ControlCenterEventArgs();
             ccea.sideMode = sideMode;
             ccea.side = side;
