@@ -181,15 +181,18 @@ namespace KinectTest
                         }
                     }
 
-                    if (controlCenterBodyNumberToTrack != null)
+                    if (controlCenterBodyNumberToTrack != null && controlCenterBodyNumberToTrack != "")
                     {
-                        ArmTracked armTracked = new ArmTracked();
+                        if (Convert.ToInt32(controlCenterBodyNumberToTrack) <= _bodies.Count)
+                        {
+                            ArmTracked armTracked = new ArmTracked();
 
-                        //Get or update the value of the tracked arm
-                        armTracked.updateValues(_bodies.ElementAt(Convert.ToInt32(controlCenterBodyNumberToTrack) - 1), controlCenterTrackingMode, controlCenterSideMode, controlCenterSide);
+                            //Get or update the value of the tracked arm
+                            armTracked.updateValues(_bodies.ElementAt(Convert.ToInt32(controlCenterBodyNumberToTrack) - 1), controlCenterTrackingMode, controlCenterSideMode, controlCenterSide);
 
-                        //Update the information windows
-                        informationWindow.updateArmTracked(armTracked);
+                            //Update the information windows
+                            informationWindow.updateArmTracked(armTracked);
+                        }
                     }
                 }
             }

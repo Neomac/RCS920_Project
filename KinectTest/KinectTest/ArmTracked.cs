@@ -52,6 +52,10 @@ namespace KinectTest
         /// </summary>
         HandState handState;
 
+        double angleTSE;
+
+        double angleSEEW;
+
         /// <summary>
         /// Update the value of the tracked arm
         /// </summary>
@@ -86,6 +90,8 @@ namespace KinectTest
             CameraSpacePoint cameraHead = head.Position;
             CameraSpacePoint cameraSpineShoulder = spineShoulder.Position;
             CameraSpacePoint cameraSpineBase = spineBase.Position;
+
+            Vector torso2D = new Vector(Math.Round(cameraSpineBase.X - cameraSpineShoulder.X, 3), Math.Round(cameraSpineBase.Y - cameraSpineShoulder.Y, 3));
 
             if (inputSideMode == "Auto")
             {
@@ -131,6 +137,23 @@ namespace KinectTest
                 {
                     updateValuesArm(body, inputTrackingMode, "Left");
                 }
+            }
+
+            if (this.side == "Right")
+            {
+                Vector shoulderElbowRight2D = new Vector(Math.Round(cameraShoulderRight.X - cameraElbowRight.X, 3), Math.Round(cameraShoulderRight.Y - cameraElbowRight.Y, 3));
+                Vector elbowWristRight2D = new Vector(Math.Round(cameraElbowRight.X - cameraWristRight.X, 3), Math.Round(cameraElbowRight.Y - cameraWristRight.Y, 3));
+
+                angleTSE = Vector.AngleBetween(torso2D, shoulderElbowRight2D);
+                angleSEEW = Vector.AngleBetween(shoulderElbowRight2D, elbowWristRight2D);
+            }
+            else if (this.side == "Left")
+            {
+                Vector shoulderElbowLeft2D = new Vector(Math.Round(cameraShoulderLeft.X - cameraElbowLeft.X, 3), Math.Round(cameraShoulderLeft.Y - cameraElbowLeft.Y, 3));
+                Vector elbowWristLeft2D = new Vector(Math.Round(cameraElbowLeft.X - cameraWristLeft.X, 3), Math.Round(cameraElbowLeft.Y - cameraWristLeft.Y, 3));
+
+                angleTSE = Vector.AngleBetween(torso2D, shoulderElbowLeft2D);
+                angleSEEW = Vector.AngleBetween(shoulderElbowLeft2D, elbowWristLeft2D);
             }
         }
 
@@ -227,6 +250,16 @@ namespace KinectTest
         public HandState getHandState()
         {
             return handState;
+        }
+
+        public double getAngleTSE()
+        {
+            return angleTSE;
+        }
+
+        public double getAngleSEEW()
+        {
+            return angleSEEW;
         }
     }
 }
