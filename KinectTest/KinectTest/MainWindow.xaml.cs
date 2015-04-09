@@ -50,33 +50,6 @@ namespace KinectTest
             255
         };
 
-        /// <summary>
-        /// Drawing group for body rendering output
-        /// </summary>
-        private DrawingGroup drawingGroup;
-
-        /// <summary>
-        /// Drawing image that we will display
-        /// </summary>
-        private DrawingImage imageSource;
-
-        /// <summary>
-        /// Width of display (depth space)
-        /// </summary>
-        private int displayWidth;
-
-        /// <summary>
-        /// Height of display (depth space)
-        /// </summary>
-        private int displayHeight;
-
-        /// <summary>
-        /// Active Kinect sensor
-        /// </summary>
-        private KinectSensor kinectSensor = null;
-
-        private int test = 0;
-
 
 
 
@@ -90,14 +63,6 @@ namespace KinectTest
             controlCenterWindow.SettingUpdated += new EventHandler<ControlCenterEventArgs>(controlCenterWindow_SettingUpdated); 
             informationWindow.Show();
             controlCenterWindow.Show();
-
-            // one sensor is currently supported
-            this.kinectSensor = KinectSensor.GetDefault();
-            // get the depth (display) extents
-            FrameDescription frameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
-            // get size of joint space
-            this.displayWidth = frameDescription.Width;
-            this.displayHeight = frameDescription.Height;
         }
 
         private void controlCenterWindow_SettingUpdated(object sender, ControlCenterEventArgs e)
@@ -167,30 +132,6 @@ namespace KinectTest
                 }
             }
 
-            //Open depth frame
-            using (var frame = reference.DepthFrameReference.AcquireFrame())
-            {
-                if (frame != null)
-                {
-                    if (_mode == Mode.Depth)
-                    {
-                        camera.Source = ToBitmap(frame);
-                    }
-                }
-            }
-
-            //Open infrared frame
-            using (var frame = reference.InfraredFrameReference.AcquireFrame())
-            {
-                if (frame != null)
-                {
-                    if (_mode == Mode.Infrared)
-                    {
-                        camera.Source = ToBitmap(frame);
-                    }
-                }
-            }
-
             //Output body variables in the console
             using (var frame = reference.BodyFrameReference.AcquireFrame())
             {
@@ -209,16 +150,27 @@ namespace KinectTest
                             if (body.IsTracked)
                             {
                                 Joint headJoint = body.Joints[JointType.Head];
+                                CameraSpacePoint cameraPoint = headJoint.Position;
+
+                                Point point = new Point();
 
                                 if (headJoint.TrackingState == TrackingState.Tracked)
 	                            {
-                                    DepthSpacePoint dsp = _sensor.CoordinateMapper.MapCameraPointToDepthSpace(headJoint.Position);
+                                    if (_mode==Mode.Color)
+                                    {
+                                        ColorSpacePoint colorPoint = _sensor.CoordinateMapper.MapCameraPointToColorSpace(cameraPoint);
+
+                                        point.X = float.IsInfinity(colorPoint.X) ? 0 : colorPoint.X;
+                                        point.Y = float.IsInfinity(colorPoint.Y) ? 0 : colorPoint.Y;
+                                    }
+
                                     TextBlock userNumber = new TextBlock();
-                                    userNumber.Text = String.Format("{0}", _bodies.IndexOf(body)+1);
+                                    userNumber.Text = String.Format("{0}", _bodies.IndexOf(body) + 1);
                                     userNumber.Foreground = new SolidColorBrush(Color.FromArgb(255, BodyColor[counterColor], BodyColor[counterColor + 1], BodyColor[counterColor + 2]));
+                                    userNumber.FontSize = 24;
+                                    Canvas.SetLeft(userNumber, point.X/2 - 10);
+                                    Canvas.SetTop(userNumber, point.Y/2 - 70);
                                     canvasUser.Children.Add(userNumber);
-                                    Canvas.SetLeft(userNumber, dsp.X - 10);
-                                    Canvas.SetTop(userNumber, dsp.Y - 50);
                                     counterColor +=1;
                                     if (counterColor > 9)
 	                                {
@@ -232,8 +184,6 @@ namespace KinectTest
                     if (controlCenterBodyNumberToTrack != null)
                     {
                         ArmTracked armTracked = new ArmTracked();
-
-                        Body bodyTest = _bodies.ElementAt(test);
 
                         //Get or update the value of the tracked arm
                         armTracked.updateValues(_bodies.ElementAt(Convert.ToInt32(controlCenterBodyNumberToTrack) - 1), controlCenterTrackingMode, controlCenterSideMode, controlCenterSide);
@@ -260,39 +210,6 @@ namespace KinectTest
             else
             {
                 frame.CopyConvertedFrameDataToArray(pixels, ColorImageFormat.Bgra);
-            }
-
-            int stride = width * format.BitsPerPixel / 8;
-
-            return BitmapSource.Create(width, height, 96, 96, format, null, pixels, stride);
-        }
-
-        private ImageSource ToBitmap(DepthFrame frame)
-        {
-            int width = frame.FrameDescription.Width;
-            int height = frame.FrameDescription.Height;
-            PixelFormat format = PixelFormats.Bgr32;
-
-            ushort minDepth = frame.DepthMinReliableDistance;
-            ushort maxDepth = frame.DepthMaxReliableDistance;
-
-            ushort[] pixelData = new ushort[width * height];
-            byte[] pixels = new byte[width * height * (format.BitsPerPixel + 7) / 8];
-
-            frame.CopyFrameDataToArray(pixelData);
-
-            int colorIndex = 0;
-            for (int depthIndex = 0; depthIndex < pixelData.Length; ++depthIndex)
-            {
-                ushort depth = pixelData[depthIndex];
-
-                byte intensity = (byte)(depth >= minDepth && depth <= maxDepth ? depth : 0);
-
-                pixels[colorIndex++] = intensity; // Blue
-                pixels[colorIndex++] = intensity; // Green
-                pixels[colorIndex++] = intensity; // Red
-
-                ++colorIndex;
             }
 
             int stride = width * format.BitsPerPixel / 8;
@@ -328,21 +245,6 @@ namespace KinectTest
             int stride = width * format.BitsPerPixel / 8;
 
             return BitmapSource.Create(width, height, 96, 96, format, null, pixels, stride);
-        }
-
-        private void Color_Click(object sender, RoutedEventArgs e)
-        {
-            _mode = Mode.Color;
-        }
-
-        private void Depth_Click(object sender, RoutedEventArgs e)
-        {
-            _mode = Mode.Depth;
-        }
-
-        private void Infrared_Click(object sender, RoutedEventArgs e)
-        {
-            _mode = Mode.Infrared;
         }
 
         public string getControlCenterMode()
