@@ -1,11 +1,26 @@
 ﻿<Window x:Class="KinectTest.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Kinect | Color, Depth, Infrared" Height="540" Width="960" Loaded="Window_Loaded" Closed="Window_Closed">
+        Title="Kinect | Color, Depth, Infrared" Height="540" Width="1500" Loaded="Window_Loaded" Closed="Window_Closed">
     <Grid>
-        <Image Name="camera" Width="960" Height="540" />
-        <Canvas Name="canvasUser" Width="960" Height="540" />
-        <Grid>
+        <Image Name="camera" Width="960" Height="540" Margin="0,0,532,-31" />
+        <Canvas Name="canvasUser" Width="960" Height="540" Margin="0,0,532,-31" />
+        <Grid Margin="977,10,-977,-10">
+            <TextBlock HorizontalAlignment="Left" Margin="-8,10,0,0" TextWrapping="Wrap" Text="Select your tracking mode :" VerticalAlignment="Top"/>
+            <RadioButton GroupName="TrackingModeSelection" Content="Mimicking" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top" Checked="RadioMimicking_Checked" Name="radioMimicking"/>
+            <RadioButton GroupName="TrackingModeSelection" Content="Moving object" HorizontalAlignment="Left" Margin="0,51,0,0" VerticalAlignment="Top" Checked="RadioMovingObject_Checked" Name="radioMovingObject"/>
+            <TextBlock HorizontalAlignment="Left" Margin="-8,71,0,0" TextWrapping="Wrap" Text="Select your side detection mode :" VerticalAlignment="Top" Name="textSideModeSelection" Visibility="Hidden"/>
+            <RadioButton GroupName="ModeSelection" Content="Auto" HorizontalAlignment="Left" Margin="0,92,0,0" VerticalAlignment="Top" RenderTransformOrigin="-1.729,0.933" Name="radioAuto" Checked="radioAuto_Checked" Visibility="Hidden"/>
+            <RadioButton GroupName="ModeSelection" Content="Manual" HorizontalAlignment="Left" Margin="-1,112,0,0" VerticalAlignment="Top" Name="radioManual" Checked="radioManual_Checked" Visibility="Hidden"/>
+            <TextBlock HorizontalAlignment="Left" Margin="-8,132,0,0" TextWrapping="Wrap" Text="Select the side to track :" VerticalAlignment="Top" Name="textSideSelection" Visibility="Hidden"/>
+            <RadioButton GroupName="SideSelection" Content="Right" HorizontalAlignment="Left" Margin="2,153,0,0" VerticalAlignment="Top" Name="radioRight" Checked="radioRight_Checked" Visibility="Hidden"/>
+            <RadioButton GroupName="SideSelection" Content="Left" HorizontalAlignment="Left" Margin="2,173,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.153,-0.8" Name="radioLeft" Checked="radioLeft_Checked" Visibility="Hidden"/>
+            <TextBox HorizontalAlignment="Left" Height="20" Margin="304,31,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="71" TextChanged="TextBox_TextChanged" Name="bodyNumberToTrack"/>
+            <TextBlock HorizontalAlignment="Left" Margin="219,10,0,0" TextWrapping="Wrap" Text="Enter the number of the user you want to track :" VerticalAlignment="Top"/>
+            <TextBlock TextWrapping="Wrap" Text="No body detected" Name="sideText" Margin="-8,254,957,0"/>
+            <TextBlock TextWrapping="Wrap" Text="" Name="hand_StateText" Margin="-8,274,978,26"/>
+            <TextBlock TextWrapping="Wrap" Text="" Name="coordinatesText" Margin="-8,295,978,-9"/>
+            <Separator Height="510" Canvas.Left="653" Margin="-29,-11,978,10" Canvas.Top="67"/>
         </Grid>
     </Grid>
 </Window>
