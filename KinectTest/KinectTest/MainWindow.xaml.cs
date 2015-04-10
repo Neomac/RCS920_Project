@@ -23,19 +23,50 @@ namespace KinectTest
     public partial class MainWindow : Window
     {
 
+        /// <summary>
+        /// Mode for the Kinect camera, only the color one is used
+        /// </summary>
         Mode _mode = Mode.Color;
+
+        /// <summary>
+        /// Instabce of the sensor
+        /// </summary>
         KinectSensor _sensor;
+
+        /// <summary>
+        /// Frames of the sensor
+        /// </summary>
         MultiSourceFrameReader _reader;
+
+        /// <summary>
+        /// List of bodies
+        /// </summary>
         IList<Body> _bodies;
-        InformationWindow informationWindow = new InformationWindow();
-        ControlCenterWindow controlCenterWindow = new ControlCenterWindow();
 
         //Control Center variables
+        /// <summary>
+        /// mode of the detection side (Auot or Manual)
+        /// </summary>
         string controlCenterSideMode;
+
+        /// <summary>
+        /// Side to track (Right or Left)
+        /// </summary>
         string controlCenterSide;
+
+        /// <summary>
+        /// Tracking mode (Mimicking or MovingObject)
+        /// </summary>
         string controlCenterTrackingMode;
+
+        /// <summary>
+        /// Number of the user to track
+        /// </summary>
         string controlCenterBodyNumberToTrack;
 
+        /// <summary>
+        /// Array of values for the color of the number of the user
+        /// </summary>
         private static readonly byte[] BodyColor =
         {
             0,
@@ -60,33 +91,8 @@ namespace KinectTest
         {
             InitializeComponent();
             //System.Diagnostics.Process.Start(@"C:\Windows\System32\Kinect\KinectService.exe");
-            controlCenterWindow.SettingUpdated += new EventHandler<ControlCenterEventArgs>(controlCenterWindow_SettingUpdated); 
-            informationWindow.Show();
-            controlCenterWindow.Show();
         }
 
-        private void controlCenterWindow_SettingUpdated(object sender, ControlCenterEventArgs e)
-        {
-            if (e != null && e.trackingMode != null)
-            {
-                controlCenterTrackingMode = e.trackingMode;
-                informationWindow.setTrackingMode(e.trackingMode);
-            }
-            if (e!= null && e.sideMode != null)
-            {
-                controlCenterSideMode = e.sideMode;
-                informationWindow.setSideMode(e.sideMode);
-            }
-            if (e!= null && e.side != null)
-            {
-                controlCenterSide = e.side;
-                informationWindow.setSide(e.side);
-            }
-            if (e!= null && e.bodyNumberToTrack != null)
-            {
-                controlCenterBodyNumberToTrack = e.bodyNumberToTrack;
-            }
-        }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -132,7 +138,7 @@ namespace KinectTest
                 }
             }
 
-            //Output body variables in the console
+            //OperationCanceledExceptions on bodies
             using (var frame = reference.BodyFrameReference.AcquireFrame())
             {
                 var counterColor = 0;
@@ -156,6 +162,7 @@ namespace KinectTest
 
                                 if (headJoint.TrackingState == TrackingState.Tracked)
 	                            {
+                                    //Dysplay the number of the body detected on the image
                                     if (_mode==Mode.Color)
                                     {
                                         ColorSpacePoint colorPoint = _sensor.CoordinateMapper.MapCameraPointToColorSpace(cameraPoint);
@@ -181,6 +188,7 @@ namespace KinectTest
                         }
                     }
 
+                    //Launch the computation about the arm if the user as specified a user to track
                     if (controlCenterBodyNumberToTrack != null && controlCenterBodyNumberToTrack != "")
                     {
                         if (Convert.ToInt32(controlCenterBodyNumberToTrack) <= _bodies.Count)
@@ -191,7 +199,7 @@ namespace KinectTest
                             armTracked.updateValues(_bodies.ElementAt(Convert.ToInt32(controlCenterBodyNumberToTrack) - 1), controlCenterTrackingMode, controlCenterSideMode, controlCenterSide);
 
                             //Update the information windows
-                            informationWindow.updateArmTracked(armTracked);
+                            updateArmTracked(armTracked);
                         }
                     }
                 }
@@ -220,51 +228,173 @@ namespace KinectTest
             return BitmapSource.Create(width, height, 96, 96, format, null, pixels, stride);
         }
 
-        private ImageSource ToBitmap(InfraredFrame frame)
+        //Control center interface functions
+        /// <summary>
+        /// Manage the radio mimicking button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RadioMimicking_Checked(object sender, RoutedEventArgs e)
         {
-            int width = frame.FrameDescription.Width;
-            int height = frame.FrameDescription.Height;
-            PixelFormat format = PixelFormats.Bgr32;
+            controlCenterTrackingMode = "Mimicking";
+            controlCenterSideMode = "";
+            controlCenterSide = "";
+            textSideModeSelection.Visibility = System.Windows.Visibility.Visible;
+            radioAuto.Visibility = System.Windows.Visibility.Visible;
+            radioAuto.IsChecked = false;
+            radioManual.Visibility = System.Windows.Visibility.Visible;
+            radioManual.IsChecked = false;
+            textSideSelection.Visibility = System.Windows.Visibility.Hidden;
+            radioRight.Visibility = System.Windows.Visibility.Hidden;
+            radioLeft.Visibility = System.Windows.Visibility.Hidden;
+        }
 
-            ushort[] frameData = new ushort[width * height];
-            byte[] pixels = new byte[width * height * (format.BitsPerPixel + 7) / 8];
+        /// <summary>
+        /// Manage the radio moving object button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void RadioMovingObject_Checked(object sender, RoutedEventArgs e)
+        {
+            controlCenterTrackingMode = "MovingObject";
+            controlCenterSideMode = "Auto";
+            controlCenterSide = "";
+            textSideModeSelection.Visibility = System.Windows.Visibility.Visible;
+            radioAuto.Visibility = System.Windows.Visibility.Visible;
+            radioAuto.IsChecked = true;
+            radioManual.Visibility = System.Windows.Visibility.Hidden;
+            radioManual.IsChecked = false;
+            textSideSelection.Visibility = System.Windows.Visibility.Hidden;
+            radioRight.Visibility = System.Windows.Visibility.Hidden;
+            radioLeft.Visibility = System.Windows.Visibility.Hidden;
+        }
 
-            frame.CopyFrameDataToArray(frameData);
+        /// <summary>
+        /// Manage the radio auto button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void radioAuto_Checked(object sender, RoutedEventArgs e)
+        {
+            controlCenterSideMode = "Auto";
+            controlCenterSide = "";
+            textSideSelection.Visibility = System.Windows.Visibility.Hidden;
+            radioRight.Visibility = System.Windows.Visibility.Hidden;
+            radioRight.IsChecked = false;
+            radioLeft.Visibility = System.Windows.Visibility.Hidden;
+            radioLeft.IsChecked = false;
+        }
 
-            int colorIndex = 0;
-            for (int infraredIndex = 0; infraredIndex < frameData.Length; infraredIndex++)
+        /// <summary>
+        /// Manage the radio manual button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void radioManual_Checked(object sender, RoutedEventArgs e)
+        {
+            controlCenterSideMode = "Manual";
+            controlCenterSide = "";
+            textSideSelection.Visibility = System.Windows.Visibility.Visible;
+            radioRight.Visibility = System.Windows.Visibility.Visible;
+            radioRight.IsChecked = false;
+            radioLeft.Visibility = System.Windows.Visibility.Visible;
+            radioLeft.IsChecked = false;
+        }
+
+        /// <summary>
+        /// Manage the radio right button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void radioRight_Checked(object sender, RoutedEventArgs e)
+        {
+            controlCenterSide = "Right";
+        }
+
+        /// <summary>
+        /// Manage the radio left button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void radioLeft_Checked(object sender, RoutedEventArgs e)
+        {
+            controlCenterSide = "Left";
+        }
+
+        /// <summary>
+        /// Manage the number input textbox
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            controlCenterBodyNumberToTrack = bodyNumberToTrack.Text;
+        }
+
+
+        //Information panel function
+        /// <summary>
+        /// Update the textblock zith the informations of the tracked user
+        /// </summary>
+        /// <param name="armTracked"></param>
+        public void updateArmTracked(ArmTracked armTracked)
+        {
+            if (controlCenterTrackingMode == "Mimicking")
             {
-                ushort ir = frameData[infraredIndex];
-
-                byte intensity = (byte)(ir >> 7);
-
-                pixels[colorIndex++] = (byte)(intensity / 1); // Blue
-                pixels[colorIndex++] = (byte)(intensity / 1); // Green   
-                pixels[colorIndex++] = (byte)(intensity / 0.4); // Red
-
-                colorIndex++;
+                if (controlCenterSideMode == "Auto")
+                {
+                    sideText.Text = String.Format("The {0} side is tracked.", armTracked.getSide());
+                    coordinatesText.Text = String.Format("Coordinates of the differentes joint tracked : \nHand : X={0} Y={1} Z={2} \nWrist : X={3} Y={4} Z={5} \nElbow : X={6} Y={7} Z={8} \nShoulder : X={9} Y={10} Z={11} \nAngle Torso/Arm : {12} \nAngle Arm/Front Arm : {13}", armTracked.getHand().Position.X, armTracked.getHand().Position.Y, armTracked.getHand().Position.Z, armTracked.getWrist().Position.X, armTracked.getWrist().Position.Y, armTracked.getWrist().Position.Z, armTracked.getElbow().Position.X, armTracked.getElbow().Position.Y, armTracked.getElbow().Position.Z, armTracked.getShoulder().Position.X, armTracked.getShoulder().Position.Y, armTracked.getShoulder().Position.Z, armTracked.getAngleTSE(), armTracked.getAngleSEEW());
+                    hand_StateText.Text = String.Format("The hand is {0}", armTracked.getHandState().ToString());
+                }
+                else if (controlCenterSideMode == "Manual")
+                {
+                    if (controlCenterSide == "")
+                    {
+                        sideText.Text = "Select a side";
+                        coordinatesText.Text = "";
+                        hand_StateText.Text = "";
+                    }
+                    if (controlCenterSide == "Right" || controlCenterSide == "Left")
+                    {
+                        sideText.Text = String.Format("The {0} side is tracked.", armTracked.getSide());
+                        coordinatesText.Text = String.Format("Coordinates of the differentes joint tracked : \nHand : X={0} Y={1} Z={2} \nWrist : X={3} Y={4} Z={5} \nElbow : X={6} Y={7} Z={8} \nShoulder : X={9} Y={10} Z={11} \nAngle Torso/Arm : {12} \nAngle Arm/Front Arm : {13}", armTracked.getHand().Position.X, armTracked.getHand().Position.Y, armTracked.getHand().Position.Z, armTracked.getWrist().Position.X, armTracked.getWrist().Position.Y, armTracked.getWrist().Position.Z, armTracked.getElbow().Position.X, armTracked.getElbow().Position.Y, armTracked.getElbow().Position.Z, armTracked.getShoulder().Position.X, armTracked.getShoulder().Position.Y, armTracked.getShoulder().Position.Z, armTracked.getAngleTSE(), armTracked.getAngleSEEW());
+                        hand_StateText.Text = String.Format("The hand is {0}", armTracked.getHandState().ToString());
+                    }
+                }
+                else
+                {
+                    sideText.Text = "Select a mode";
+                    coordinatesText.Text = "";
+                    hand_StateText.Text = "";
+                }
             }
-
-            int stride = width * format.BitsPerPixel / 8;
-
-            return BitmapSource.Create(width, height, 96, 96, format, null, pixels, stride);
-        }
-
-        public string getControlCenterMode()
-        {
-            return controlCenterSideMode;
-        }
-
-        public string getControlCenterSide()
-        {
-            return controlCenterSide;
+            else if (controlCenterTrackingMode == "MovingObject")
+            {
+                if (controlCenterSideMode == "Auto")
+                {
+                    sideText.Text = String.Format("The {0} side is tracked.", armTracked.getSide());
+                    coordinatesText.Text = String.Format("Coordinates of the differentes joint tracked : \n Hand : X={0} Y={1} Z={2}", armTracked.getHand().Position.X, armTracked.getHand().Position.Y, armTracked.getHand().Position.Z);
+                    hand_StateText.Text = String.Format("The hand is {0}", armTracked.getHandState().ToString());
+                }
+                else
+                {
+                    sideText.Text = "Select a mode";
+                    coordinatesText.Text = "";
+                    hand_StateText.Text = "";
+                }
+            }
+            else
+            {
+                sideText.Text = "Select a tracking mode";
+                coordinatesText.Text = "";
+                hand_StateText.Text = "";
+            }
         }
     }
 
     public enum Mode
     {
-        Color,
-        Depth,
-        Infrared
+        Color
     }
 }
