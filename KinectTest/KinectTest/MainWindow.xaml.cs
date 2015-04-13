@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +15,9 @@ using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Kinect;
+using Microsoft.Speech.AudioFormat;
+using Microsoft.Speech.Recognition;
+
 
 namespace KinectTest
 {
@@ -81,6 +85,7 @@ namespace KinectTest
             255
         };
 
+        int[] bodyIDTracked = new int[7];
 
 
 
@@ -103,6 +108,10 @@ namespace KinectTest
 
                 _reader = _sensor.OpenMultiSourceFrameReader(FrameSourceTypes.Color | FrameSourceTypes.Depth | FrameSourceTypes.Infrared | FrameSourceTypes.Body);
                 _reader.MultiSourceFrameArrived += Reader_MultiSourceFrameArrived;
+                
+
+                // create the convert stream
+                //this.convertStream = new KinectAudioStream(audioStream);
 
             }
         }
@@ -188,18 +197,48 @@ namespace KinectTest
                         }
                     }
 
+                    var counterBodyID = 0;
+
+                    foreach (var body in _bodies)
+                    {
+                        if (body.IsTracked == true)
+                        {   
+                            bodyIDTracked[counterBodyID] = _bodies.IndexOf(body)+1;
+                            counterBodyID++;
+                            bodyIDTracked[6] = 1;
+                        }
+                    }
+
                     //Launch the computation about the arm if the user as specified a user to track
+                    if (bodyIDTracked[6] == 1)
+                    {
+                        sideText.Text = String.Format("Select between the user numbers ");
+                        var counterBodyIDLoop = 0;
+                        while (bodyIDTracked[counterBodyIDLoop] != 0)
+	                    {
+                            sideText.Text += String.Format("{0} ", bodyIDTracked[counterBodyIDLoop]);
+                            counterBodyIDLoop++;
+	                    }
+                    }
+
                     if (controlCenterBodyNumberToTrack != null && controlCenterBodyNumberToTrack != "")
                     {
                         if (Convert.ToInt32(controlCenterBodyNumberToTrack) <= _bodies.Count)
                         {
-                            ArmTracked armTracked = new ArmTracked();
+                            if (_bodies.ElementAt(Convert.ToInt32(controlCenterBodyNumberToTrack) - 1).IsTracked != false)
+                            {
+                                ArmTracked armTracked = new ArmTracked();
 
-                            //Get or update the value of the tracked arm
-                            armTracked.updateValues(_bodies.ElementAt(Convert.ToInt32(controlCenterBodyNumberToTrack) - 1), controlCenterTrackingMode, controlCenterSideMode, controlCenterSide);
+                                //Get or update the value of the tracked arm
+                                armTracked.updateValues(_bodies.ElementAt(Convert.ToInt32(controlCenterBodyNumberToTrack) - 1), controlCenterTrackingMode, controlCenterSideMode, controlCenterSide);
 
-                            //Update the information windows
-                            updateArmTracked(armTracked);
+                                //Update the information windows
+                                updateArmTracked(armTracked);
+                            }
+                            else
+                            {
+                                sideText.Text = String.Format("The number doesn't correspond to anyone");
+                            }
                         }
                     }
                 }
@@ -227,6 +266,7 @@ namespace KinectTest
 
             return BitmapSource.Create(width, height, 96, 96, format, null, pixels, stride);
         }
+
 
         //Control center interface functions
         /// <summary>
