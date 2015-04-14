@@ -141,7 +141,7 @@ namespace KinectTest
                 {
                     this.speechEngine = new SpeechRecognitionEngine(ri.Id);
 
-                     var directions = new Choices();
+                     /*var directions = new Choices();
                      directions.Add(new SemanticResultValue("home", "HOME"));
                 
                      var gb = new GrammarBuilder { Culture = ri.Culture };
@@ -149,7 +149,14 @@ namespace KinectTest
                 
                      var g = new Grammar(gb);
 
-                     speechEngine.LoadGrammar(g);
+                     speechEngine.LoadGrammar(g);*/
+
+                    // Create a grammar from grammar definition XML file.
+                    using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(Properties.Resources.SpeechGrammar)))
+                    {
+                        var g = new Grammar(memoryStream);
+                        this.speechEngine.LoadGrammar(g);
+                    }
 
                     this.speechEngine.SpeechRecognized += this.SpeechRecognized;
                     this.speechEngine.SpeechRecognitionRejected += this.SpeechRejected;

@@ -4,9 +4,9 @@
       <item>
         <tag>HOME</tag>
         <one-of>
-          <item> home </item>
+          <item> home position </item>
           <item> go home </item>
-          <item> rest </item>
+          <item> home </item>
         </one-of>
       </item>
     </one-of>
