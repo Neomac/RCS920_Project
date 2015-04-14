@@ -105,6 +105,8 @@ namespace KinectTest
 
         int[] bodyIDTracked = new int[7];
 
+        private bool keywordOK = false;
+
 
 
 
@@ -141,22 +143,29 @@ namespace KinectTest
                 {
                     this.speechEngine = new SpeechRecognitionEngine(ri.Id);
 
-                     /*var directions = new Choices();
-                     directions.Add(new SemanticResultValue("home", "HOME"));
+                     var keyword = new Choices();
+                     keyword.Add(new SemanticResultValue("robot", "ROBOT"));
+
+                     var order = new Choices();
+                     order.Add(new SemanticResultKey("go home", "HOME"));
+                     order.Add(new SemanticResultKey("rest", "HOME"));
+                     order.Add(new SemanticResultKey("home", "HOME"));
                 
                      var gb = new GrammarBuilder { Culture = ri.Culture };
-                     gb.Append(directions);
+                     gb.Append("robot");
+                     gb.Append(order);
+                     gb.Append("please");
                 
                      var g = new Grammar(gb);
 
-                     speechEngine.LoadGrammar(g);*/
+                     speechEngine.LoadGrammar(g);
 
                     // Create a grammar from grammar definition XML file.
-                    using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(Properties.Resources.SpeechGrammar)))
+                    /*using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(Properties.Resources.SpeechGrammar)))
                     {
                         var g = new Grammar(memoryStream);
                         this.speechEngine.LoadGrammar(g);
-                    }
+                    }*/
 
                     this.speechEngine.SpeechRecognized += this.SpeechRecognized;
                     this.speechEngine.SpeechRecognitionRejected += this.SpeechRejected;
@@ -371,14 +380,18 @@ namespace KinectTest
         private void SpeechRecognized(object sender, SpeechRecognizedEventArgs e)
         {
             // Speech utterance confidence below which we treat speech as if it hadn't been heard
-            const double ConfidenceThreshold = 0.3;
+            const double ConfidenceThreshold = 0.5;
+
 
             if (e.Result.Confidence >= ConfidenceThreshold)
             {
-                switch (e.Result.Semantics.Value.ToString())
+                switch (e.Result.Words[1].Text)
                 {
                     case "HOME":
-                        controlCenterVoiceOrder = "Home";
+		                controlCenterVoiceOrder = "Home";
+                        break;
+
+                    default:
                         break;
                 }
             }

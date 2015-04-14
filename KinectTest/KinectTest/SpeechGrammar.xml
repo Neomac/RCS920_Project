@@ -2,6 +2,12 @@
   <rule id="rootRule">
     <one-of>
       <item>
+        <tag>ROBOT</tag>
+        <one-of>
+          <item> robot </item>
+        </one-of>
+      </item>
+      <item>
         <tag>HOME</tag>
         <one-of>
           <item> home </item>
