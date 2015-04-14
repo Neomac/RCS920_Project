@@ -141,12 +141,15 @@ namespace KinectTest
                 {
                     this.speechEngine = new SpeechRecognitionEngine(ri.Id);
 
-                    // Create a grammar from grammar definition XML file.
-                    using (var memoryStream = new MemoryStream(Encoding.ASCII.GetBytes(Properties.Resources.SpeechGrammar)))
-                    {
-                        var g = new Grammar(memoryStream);
-                        this.speechEngine.LoadGrammar(g);
-                    }
+                     var directions = new Choices();
+                     directions.Add(new SemanticResultValue("home", "HOME"));
+                
+                     var gb = new GrammarBuilder { Culture = ri.Culture };
+                     gb.Append(directions);
+                
+                     var g = new Grammar(gb);
+
+                     speechEngine.LoadGrammar(g);
 
                     this.speechEngine.SpeechRecognized += this.SpeechRecognized;
                     this.speechEngine.SpeechRecognitionRejected += this.SpeechRejected;
@@ -156,10 +159,10 @@ namespace KinectTest
 
                     // For long recognition sessions (a few hours or more), it may be beneficial to turn off adaptation of the acoustic model. 
                     // This will prevent recognition accuracy from degrading over time.
-                    ////speechEngine.UpdateRecognizerSetting("AdaptationOn", 0);
+                    speechEngine.UpdateRecognizerSetting("AdaptationOn", 0);
 
                     this.speechEngine.SetInputToAudioStream(
-                        this.convertStream, new SpeechAudioFormatInfo(EncodingFormat.Pcm, 16000, 16, 1, 32000, 2, null));
+                    this.convertStream, new SpeechAudioFormatInfo(EncodingFormat.Pcm, 16000, 16, 1, 32000, 2, null));
                     this.speechEngine.RecognizeAsync(RecognizeMode.Multiple);
 
                 }
@@ -284,6 +287,12 @@ namespace KinectTest
 
                                 //Update the information windows
                                 updateArmTracked(armTracked);
+
+                                //Update voice command textblock
+                                if (controlCenterVoiceOrder != "")
+                                {
+                                    voiceCommandText.Text = String.Format("Voice command detected, order is : {0}", controlCenterVoiceOrder);
+                                }
                             }
                             else
                             {
