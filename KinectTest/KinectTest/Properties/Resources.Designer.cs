@@ -67,5 +67,13 @@ namespace KinectTest.Properties
                 resourceCulture = value;
             }
         }
+
+        internal static string SpeechGrammar
+        {
+            get
+            {
+                return ResourceManager.GetString("SpeechGrammar", resourceCulture);
+            }
+        }
     }
 }

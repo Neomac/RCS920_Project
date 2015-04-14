@@ -4,7 +4,7 @@
 // </copyright>
 //------------------------------------------------------------------------------
 
-namespace Microsoft.Samples.Kinect.SpeechBasics
+namespace KinectTest
 {
     using System;
     using System.IO;
