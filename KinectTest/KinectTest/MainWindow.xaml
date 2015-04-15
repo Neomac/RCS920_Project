@@ -3,9 +3,13 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Kinect | Color, Depth, Infrared" Height="540" Width="1500" Loaded="Window_Loaded" Closed="Window_Closed">
     <Grid>
-        <Image Name="camera" Width="960" Height="540" Margin="0,0,532,-31" />
-        <Canvas Name="canvasUser" Width="960" Height="540" Margin="0,0,532,-31" />
-        <Grid Margin="977,10,-977,-10">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="233*"/>
+            <ColumnDefinition Width="513*"/>
+        </Grid.ColumnDefinitions>
+        <Image Name="camera" Width="960" Height="540" Margin="0,0,532,-31" Grid.ColumnSpan="2" />
+        <Canvas Name="canvasUser" Width="960" Height="540" Margin="0,0,532,-31" Grid.ColumnSpan="2" />
+        <Grid Margin="511,10,-977,-10" Grid.Column="1">
             <TextBlock HorizontalAlignment="Left" Margin="-8,10,0,0" TextWrapping="Wrap" Text="Select your tracking mode :" VerticalAlignment="Top"/>
             <RadioButton GroupName="TrackingModeSelection" Content="Mimicking" HorizontalAlignment="Left" Margin="0,31,0,0" VerticalAlignment="Top" Checked="RadioMimicking_Checked" Name="radioMimicking"/>
             <RadioButton GroupName="TrackingModeSelection" Content="Moving object" HorizontalAlignment="Left" Margin="0,51,0,0" VerticalAlignment="Top" Checked="RadioMovingObject_Checked" Name="radioMovingObject"/>
@@ -21,7 +25,7 @@
             <TextBlock TextWrapping="Wrap" Text="" Name="hand_StateText" Margin="-8,274,978,26"/>
             <TextBlock TextWrapping="Wrap" Text="" Name="coordinatesText" Margin="-8,295,978,-9"/>
             <Separator Height="510" Canvas.Left="653" Margin="-29,-1,978,0" Canvas.Top="67"/>
-            <TextBlock HorizontalAlignment="Left" Margin="219,254,0,0" TextWrapping="Wrap" Text="Test" VerticalAlignment="Top" Name="voiceCommandText"/>
+            <TextBlock HorizontalAlignment="Left" Margin="219,254,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Name="voiceCommandText"/>
         </Grid>
     </Grid>
 </Window>

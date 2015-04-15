@@ -28,32 +28,38 @@ namespace KinectTest
         string side;
 
         /// <summary>
-        /// Joint information of the tracked hand
+        /// Position X, Y, Z of the hand
         /// </summary>
-        Joint hand;
+        CameraSpacePoint hand;
 
         /// <summary>
-        /// Joint information of the tracked wrist
+        /// Position X, Y, Z of the wrist
         /// </summary>
-        Joint wrist;
+        CameraSpacePoint wrist;
 
         /// <summary>
-        /// Joint information of the tracked elbow
+        /// Position X, Y, Z of the elbow
         /// </summary>
-        Joint elbow;
+        CameraSpacePoint elbow;
 
         /// <summary>
-        /// Joint information of the tracked shoulder
+        /// Position X, Y, Z of the shoulder
         /// </summary>
-        Joint shoulder;
+        CameraSpacePoint shoulder;
 
         /// <summary>
         /// State (Open, Closed, Lasso, Unknown) of the tracked hand
         /// </summary>
         HandState handState;
 
+        /// <summary>
+        /// Angle betzeen the torso and the shoulder elbow vector
+        /// </summary>
         double angleTSE;
 
+        /// <summary>
+        /// Angle betzeen the shoulder elbow vector and the elbow wrist vector
+        /// </summary>
         double angleSEEW;
 
         /// <summary>
@@ -92,6 +98,11 @@ namespace KinectTest
             CameraSpacePoint cameraSpineBase = spineBase.Position;
 
             Vector torso2D = new Vector(Math.Round(cameraSpineBase.X - cameraSpineShoulder.X, 3), Math.Round(cameraSpineBase.Y - cameraSpineShoulder.Y, 3));
+
+            //Round every position values
+            handLeft.Position.X = (float)Math.Round(handLeft.Position.X, 3);
+            handLeft.Position.Y = (float)Math.Round(handLeft.Position.Y, 3);
+            handLeft.Position.Z = (float)Math.Round(handLeft.Position.Z, 3);
 
             if (inputSideMode == "Auto")
             {
@@ -166,28 +177,28 @@ namespace KinectTest
 		        if (inputSide == "Right")
 	            {
 		            side = "Right";
-                    hand = joints[JointType.HandRight];
-                    wrist = joints[JointType.WristRight];;
-                    elbow = joints[JointType.ElbowRight];
-                    shoulder = joints[JointType.ShoulderRight];
+                    hand = joints[JointType.HandRight].Position;
+                    wrist = joints[JointType.WristRight].Position;
+                    elbow = joints[JointType.ElbowRight].Position;
+                    shoulder = joints[JointType.ShoulderRight].Position;
                     handState = body.HandRightState;
 	            }
                 else if (inputSide == "Left")
 	            {
 		            side = "Left";
-                    hand = joints[JointType.HandLeft];
-                    wrist = joints[JointType.WristLeft];;
-                    elbow = joints[JointType.ElbowLeft];
-                    shoulder = joints[JointType.ShoulderLeft];
+                    hand = joints[JointType.HandLeft].Position;
+                    wrist = joints[JointType.WristLeft].Position;
+                    elbow = joints[JointType.ElbowLeft].Position;
+                    shoulder = joints[JointType.ShoulderLeft].Position;
                     handState = body.HandLeftState;
 	            }
                 else
 	            {
 		            side = "None";
-                    hand = new Joint();
-                    wrist = new Joint();
-                    elbow = new Joint();
-                    shoulder = new Joint();
+                    hand = new CameraSpacePoint();
+                    wrist = new CameraSpacePoint();
+                    elbow = new CameraSpacePoint();
+                    shoulder = new CameraSpacePoint();
                     handState = new HandState();
 	            }
 	        }
@@ -196,26 +207,26 @@ namespace KinectTest
 		        if (inputSide == "Right")
 	            {
 		            side = "Right";
-                    hand = joints[JointType.HandRight];
-                    elbow = new Joint();
-                    shoulder = new Joint();
+                    hand = joints[JointType.HandRight].Position;
+                    elbow = new CameraSpacePoint();
+                    shoulder = new CameraSpacePoint();
                     handState = body.HandLeftState;
 	            }
                 if (inputSide == "Left")
 	            {
 		            side = "Left";
-                    hand = joints[JointType.HandLeft];
-                    elbow = new Joint();
-                    shoulder = new Joint();
+                    hand = joints[JointType.HandLeft].Position;
+                    elbow = new CameraSpacePoint();
+                    shoulder = new CameraSpacePoint();
                     handState = body.HandRightState;
 	            }
                 if (inputSide == "None")
 	            {
 		            side = "None";
-                    hand = new Joint();
-                    wrist = new Joint();
-                    elbow = new Joint();
-                    shoulder = new Joint();
+                    hand = new CameraSpacePoint();
+                    wrist = new CameraSpacePoint();
+                    elbow = new CameraSpacePoint();
+                    shoulder = new CameraSpacePoint();
                     handState = new HandState();
 	            }
 	        }
@@ -227,22 +238,22 @@ namespace KinectTest
             return side;
         }
 
-        public Joint getHand()
+        public CameraSpacePoint getHand()
         {
             return hand;
         }
 
-        public Joint getWrist()
+        public CameraSpacePoint getWrist()
         {
             return wrist;
         }
 
-        public Joint getElbow()
+        public CameraSpacePoint getElbow()
         {
             return elbow;
         }
 
-        public Joint getShoulder()
+        public CameraSpacePoint getShoulder()
         {
             return shoulder;
         }

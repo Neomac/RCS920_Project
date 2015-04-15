@@ -305,7 +305,7 @@ namespace KinectTest
                                 updateArmTracked(armTracked);
 
                                 //Update voice command textblock
-                                if (controlCenterVoiceOrder != "")
+                                if (controlCenterVoiceOrder != "" && controlCenterVoiceOrder != null)
                                 {
                                     voiceCommandText.Text = String.Format("Voice command detected, order is : {0}", controlCenterVoiceOrder);
                                 }
@@ -528,7 +528,7 @@ namespace KinectTest
                 if (controlCenterSideMode == "Auto")
                 {
                     sideText.Text = String.Format("The {0} side is tracked.", armTracked.getSide());
-                    coordinatesText.Text = String.Format("Coordinates of the differentes joint tracked : \nHand : X={0} Y={1} Z={2} \nWrist : X={3} Y={4} Z={5} \nElbow : X={6} Y={7} Z={8} \nShoulder : X={9} Y={10} Z={11} \nAngle Torso/Arm : {12} \nAngle Arm/Front Arm : {13}", armTracked.getHand().Position.X, armTracked.getHand().Position.Y, armTracked.getHand().Position.Z, armTracked.getWrist().Position.X, armTracked.getWrist().Position.Y, armTracked.getWrist().Position.Z, armTracked.getElbow().Position.X, armTracked.getElbow().Position.Y, armTracked.getElbow().Position.Z, armTracked.getShoulder().Position.X, armTracked.getShoulder().Position.Y, armTracked.getShoulder().Position.Z, armTracked.getAngleTSE(), armTracked.getAngleSEEW());
+                    coordinatesText.Text = String.Format("Coordinates of the differentes joint tracked : \nHand : X=" + armTracked.getHand().X.ToString("F2") + " Y=" + armTracked.getHand().Y.ToString("F2") + " Z=" + armTracked.getHand().Z.ToString("F2") + " \nWrist : X=" + armTracked.getWrist().X.ToString("F2") + " Y=" + armTracked.getWrist().Y.ToString("F2") + " Z=" + armTracked.getWrist().Z.ToString("F2") + " \nElbow : X=" + armTracked.getElbow().X.ToString("F2") + " Y=" + armTracked.getElbow().Y.ToString("F2") + " Z=" + armTracked.getElbow().Z.ToString("F2") + "  \nShoulder : X=" + armTracked.getShoulder().X.ToString("F2") + " Y=" + armTracked.getShoulder().Y.ToString("F2") + " Z=" + armTracked.getShoulder().Z.ToString("F2") + " \nAngle Torso/Arm : " + armTracked.getAngleTSE().ToString("F2") + " \nAngle Arm/Front Arm : " + armTracked.getAngleSEEW().ToString("F2"));
                     hand_StateText.Text = String.Format("The hand is {0}", armTracked.getHandState().ToString());
                 }
                 else if (controlCenterSideMode == "Manual")
@@ -542,7 +542,7 @@ namespace KinectTest
                     if (controlCenterSide == "Right" || controlCenterSide == "Left")
                     {
                         sideText.Text = String.Format("The {0} side is tracked.", armTracked.getSide());
-                        coordinatesText.Text = String.Format("Coordinates of the differentes joint tracked : \nHand : X={0} Y={1} Z={2} \nWrist : X={3} Y={4} Z={5} \nElbow : X={6} Y={7} Z={8} \nShoulder : X={9} Y={10} Z={11} \nAngle Torso/Arm : {12} \nAngle Arm/Front Arm : {13}", armTracked.getHand().Position.X, armTracked.getHand().Position.Y, armTracked.getHand().Position.Z, armTracked.getWrist().Position.X, armTracked.getWrist().Position.Y, armTracked.getWrist().Position.Z, armTracked.getElbow().Position.X, armTracked.getElbow().Position.Y, armTracked.getElbow().Position.Z, armTracked.getShoulder().Position.X, armTracked.getShoulder().Position.Y, armTracked.getShoulder().Position.Z, armTracked.getAngleTSE(), armTracked.getAngleSEEW());
+                        coordinatesText.Text = String.Format("Coordinates of the differentes joint tracked : \nHand : X=" + armTracked.getHand().X.ToString("F2") + " Y=" + armTracked.getHand().Y.ToString("F2") + " Z=" + armTracked.getHand().Z.ToString("F2") + " \nWrist : X=" + armTracked.getWrist().X.ToString("F2") + " Y=" + armTracked.getWrist().Y.ToString("F2") + " Z=" + armTracked.getWrist().Z.ToString("F2") + " \nElbow : X=" + armTracked.getElbow().X.ToString("F2") + " Y=" + armTracked.getElbow().Y.ToString("F2") + " Z=" + armTracked.getElbow().Z.ToString("F2") + "  \nShoulder : X=" + armTracked.getShoulder().X.ToString("F2") + " Y=" + armTracked.getShoulder().Y.ToString("F2") + " Z=" + armTracked.getShoulder().Z.ToString("F2") + " \nAngle Torso/Arm : " + armTracked.getAngleTSE().ToString("F2") + " \nAngle Arm/Front Arm : " + armTracked.getAngleSEEW().ToString("F2"));
                         hand_StateText.Text = String.Format("The hand is {0}", armTracked.getHandState().ToString());
                     }
                 }
@@ -558,7 +558,7 @@ namespace KinectTest
                 if (controlCenterSideMode == "Auto")
                 {
                     sideText.Text = String.Format("The {0} side is tracked.", armTracked.getSide());
-                    coordinatesText.Text = String.Format("Coordinates of the differentes joint tracked : \n Hand : X={0} Y={1} Z={2}", armTracked.getHand().Position.X, armTracked.getHand().Position.Y, armTracked.getHand().Position.Z);
+                    coordinatesText.Text = String.Format("Coordinates of the differentes joint tracked : \n Hand : X=" + armTracked.getHand().X.ToString("F2") + " Y=" + armTracked.getHand().Y.ToString("F2") + " Z=" + armTracked.getHand().Z.ToString("F2"));
                     hand_StateText.Text = String.Format("The hand is {0}", armTracked.getHandState().ToString());
                 }
                 else
