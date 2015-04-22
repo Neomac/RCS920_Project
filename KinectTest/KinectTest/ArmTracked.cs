@@ -177,19 +177,19 @@ namespace KinectTest
 		        if (inputSide == "Right")
 	            {
 		            side = "Right";
-                    hand = joints[JointType.HandRight].Position;
-                    wrist = joints[JointType.WristRight].Position;
-                    elbow = joints[JointType.ElbowRight].Position;
-                    shoulder = joints[JointType.ShoulderRight].Position;
+                    hand = originToSpineBase(joints, joints[JointType.HandRight].Position);
+                    wrist = originToSpineBase(joints, joints[JointType.WristRight].Position);
+                    elbow = originToSpineBase(joints, joints[JointType.ElbowRight].Position);
+                    shoulder = originToSpineBase(joints, joints[JointType.ShoulderRight].Position);
                     handState = body.HandRightState;
 	            }
                 else if (inputSide == "Left")
 	            {
 		            side = "Left";
-                    hand = joints[JointType.HandLeft].Position;
-                    wrist = joints[JointType.WristLeft].Position;
-                    elbow = joints[JointType.ElbowLeft].Position;
-                    shoulder = joints[JointType.ShoulderLeft].Position;
+                    hand = originToSpineBase(joints, joints[JointType.HandLeft].Position);
+                    wrist = originToSpineBase(joints, joints[JointType.WristLeft].Position);
+                    elbow = originToSpineBase(joints, joints[JointType.ElbowLeft].Position);
+                    shoulder = originToSpineBase(joints, joints[JointType.ShoulderLeft].Position);
                     handState = body.HandLeftState;
 	            }
                 else
@@ -207,7 +207,7 @@ namespace KinectTest
 		        if (inputSide == "Right")
 	            {
 		            side = "Right";
-                    hand = joints[JointType.HandRight].Position;
+                    hand = originToSpineBase(joints, joints[JointType.HandRight].Position);
                     elbow = new CameraSpacePoint();
                     shoulder = new CameraSpacePoint();
                     handState = body.HandLeftState;
@@ -215,7 +215,7 @@ namespace KinectTest
                 if (inputSide == "Left")
 	            {
 		            side = "Left";
-                    hand = joints[JointType.HandLeft].Position;
+                    hand = originToSpineBase(joints, joints[JointType.HandLeft].Position);
                     elbow = new CameraSpacePoint();
                     shoulder = new CameraSpacePoint();
                     handState = body.HandRightState;
@@ -230,6 +230,15 @@ namespace KinectTest
                     handState = new HandState();
 	            }
 	        }
+        }
+
+        public CameraSpacePoint originToSpineBase(IReadOnlyDictionary<JointType, Joint> joints, CameraSpacePoint cameraSpacePointInput)
+        {
+            CameraSpacePoint cameraSpacePointOutput = new CameraSpacePoint();
+            cameraSpacePointOutput.X = cameraSpacePointInput.X - joints[JointType.SpineBase].Position.X;
+            cameraSpacePointOutput.Y = cameraSpacePointInput.Y - joints[JointType.SpineBase].Position.Y;
+            cameraSpacePointOutput.Z = cameraSpacePointInput.Z - joints[JointType.SpineBase].Position.Z;
+            return cameraSpacePointOutput;
         }
 
         //Getters
