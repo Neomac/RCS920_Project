@@ -177,19 +177,19 @@ namespace KinectTest
 		        if (inputSide == "Right")
 	            {
 		            side = "Right";
-                    hand = originToSpineBase(joints, joints[JointType.HandRight].Position);
-                    wrist = originToSpineBase(joints, joints[JointType.WristRight].Position);
-                    elbow = originToSpineBase(joints, joints[JointType.ElbowRight].Position);
-                    shoulder = originToSpineBase(joints, joints[JointType.ShoulderRight].Position);
+                    hand = originToShoulderBase(joints, joints[JointType.HandRight].Position);
+                    wrist = originToShoulderBase(joints, joints[JointType.WristRight].Position);
+                    elbow = originToShoulderBase(joints, joints[JointType.ElbowRight].Position);
+                    shoulder = originToShoulderBase(joints, joints[JointType.ShoulderRight].Position);
                     handState = body.HandRightState;
 	            }
                 else if (inputSide == "Left")
 	            {
 		            side = "Left";
-                    hand = originToSpineBase(joints, joints[JointType.HandLeft].Position);
-                    wrist = originToSpineBase(joints, joints[JointType.WristLeft].Position);
-                    elbow = originToSpineBase(joints, joints[JointType.ElbowLeft].Position);
-                    shoulder = originToSpineBase(joints, joints[JointType.ShoulderLeft].Position);
+                    hand = originToShoulderBase(joints, joints[JointType.HandLeft].Position);
+                    wrist = originToShoulderBase(joints, joints[JointType.WristLeft].Position);
+                    elbow = originToShoulderBase(joints, joints[JointType.ElbowLeft].Position);
+                    shoulder = originToShoulderBase(joints, joints[JointType.ShoulderLeft].Position);
                     handState = body.HandLeftState;
 	            }
                 else
@@ -207,7 +207,7 @@ namespace KinectTest
 		        if (inputSide == "Right")
 	            {
 		            side = "Right";
-                    hand = originToSpineBase(joints, joints[JointType.HandRight].Position);
+                    hand = originToShoulderBase(joints, joints[JointType.HandRight].Position);
                     elbow = new CameraSpacePoint();
                     shoulder = new CameraSpacePoint();
                     handState = body.HandLeftState;
@@ -215,7 +215,7 @@ namespace KinectTest
                 if (inputSide == "Left")
 	            {
 		            side = "Left";
-                    hand = originToSpineBase(joints, joints[JointType.HandLeft].Position);
+                    hand = originToShoulderBase(joints, joints[JointType.HandLeft].Position);
                     elbow = new CameraSpacePoint();
                     shoulder = new CameraSpacePoint();
                     handState = body.HandRightState;
@@ -232,12 +232,27 @@ namespace KinectTest
 	        }
         }
 
-        public CameraSpacePoint originToSpineBase(IReadOnlyDictionary<JointType, Joint> joints, CameraSpacePoint cameraSpacePointInput)
+        public CameraSpacePoint originToShoulderBase(IReadOnlyDictionary<JointType, Joint> joints, CameraSpacePoint cameraSpacePointInput)
         {
             CameraSpacePoint cameraSpacePointOutput = new CameraSpacePoint();
-            cameraSpacePointOutput.X = cameraSpacePointInput.X - joints[JointType.SpineBase].Position.X;
-            cameraSpacePointOutput.Y = cameraSpacePointInput.Y - joints[JointType.SpineBase].Position.Y;
-            cameraSpacePointOutput.Z = cameraSpacePointInput.Z - joints[JointType.SpineBase].Position.Z;
+            if (side == "Left")
+            {
+                cameraSpacePointOutput.X = cameraSpacePointInput.X - joints[JointType.ShoulderLeft].Position.X;
+                cameraSpacePointOutput.Y = cameraSpacePointInput.Y - joints[JointType.ShoulderLeft].Position.Y;
+                cameraSpacePointOutput.Z = cameraSpacePointInput.Z - joints[JointType.ShoulderLeft].Position.Z;
+            }
+            else if (side == "Right")
+            {
+                cameraSpacePointOutput.X = cameraSpacePointInput.X - joints[JointType.ShoulderLeft].Position.X;
+                cameraSpacePointOutput.Y = cameraSpacePointInput.Y - joints[JointType.ShoulderLeft].Position.Y;
+                cameraSpacePointOutput.Z = cameraSpacePointInput.Z - joints[JointType.ShoulderLeft].Position.Z;
+            }
+            else
+            {
+                cameraSpacePointOutput.X = 0;
+                cameraSpacePointOutput.Y = 0;
+                cameraSpacePointOutput.Z = 0;
+            }
             return cameraSpacePointOutput;
         }
 

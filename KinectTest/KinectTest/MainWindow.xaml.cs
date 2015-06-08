@@ -4,6 +4,7 @@ using System.Linq;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -18,7 +19,10 @@ using System.Windows.Shapes;
 using Microsoft.Kinect;
 using Microsoft.Speech.AudioFormat;
 using Microsoft.Speech.Recognition;
-using System.Runtime.InteropServices; 
+using System.Runtime.InteropServices;
+using IronPython.Hosting;
+using Microsoft.Scripting;
+using Microsoft.Scripting.Hosting;
 
 
 namespace KinectTest
@@ -140,7 +144,9 @@ namespace KinectTest
         //public static extern int parseCartesian(string msg, double *x, double *y, double *z, double *q0, double *qx, double *qy, double *qz);
         //public static extern int parseJoints(string msg, double *joint1, double *joint2, double *joint3, double *joint4, double *joint5, double *joint6);
 
-
+        private ScriptEngine py = null;
+        private ScriptScope scope = null;
+        private Dictionary<string, object> options = new Dictionary<string,object>();
 
 
 
@@ -156,6 +162,26 @@ namespace KinectTest
             _sensor = KinectSensor.GetDefault();
             if (_sensor != null)
             {
+                //IronPython Engine
+                try
+                {
+                    options["Frames"] = true;
+                    options["FullFrames"] = true;
+                    py = Python.CreateEngine(options);
+                    scope = py.CreateScope();
+                    var source = py.CreateScriptSourceFromFile("InitScript.py");
+                    source.Execute(scope);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error: " + ex.Message);
+                }
+
+                
+
+
+
+
                 _sensor.Open();
 
                 _reader = _sensor.OpenMultiSourceFrameReader(FrameSourceTypes.Color | FrameSourceTypes.Depth | FrameSourceTypes.Infrared | FrameSourceTypes.Body);
@@ -221,6 +247,8 @@ namespace KinectTest
             {
                 _sensor.Close();
             }
+            var closeConnection = py.CreateScriptSourceFromFile("CloseConnection.py");
+            closeConnection.Execute(scope);
         }
 
         void Reader_MultiSourceFrameArrived(object sender, MultiSourceFrameArrivedEventArgs e)
@@ -335,8 +363,17 @@ namespace KinectTest
                                     voiceCommandText.Text = String.Format("Voice command detected, order is : {0}", controlCenterVoiceOrder);
                                 }
 
-                                //Send command to the robot
-                                pingRobot();
+                                if (controlCenterSideMode != null && controlCenterSide != null)
+                                {
+                                    //Send command to the robot
+                                    Thread sendOrderThread = sendOrderThread = new Thread(() => sendRobotOrder(armTracked));
+                                    if ( sendOrderThread.IsAlive == false)
+                                    {
+                                        sendOrderThread = new Thread(() => sendRobotOrder(armTracked));
+                                        sendOrderThread.Start();
+                                    }
+
+                                }
                             }
                             else
                             {
@@ -449,8 +486,8 @@ namespace KinectTest
         private void RadioMimicking_Checked(object sender, RoutedEventArgs e)
         {
             controlCenterTrackingMode = "Mimicking";
-            controlCenterSideMode = "";
-            controlCenterSide = "";
+            controlCenterSideMode = null;
+            controlCenterSide = null;
             textSideModeSelection.Visibility = System.Windows.Visibility.Visible;
             radioAuto.Visibility = System.Windows.Visibility.Visible;
             radioAuto.IsChecked = false;
@@ -470,7 +507,7 @@ namespace KinectTest
         {
             controlCenterTrackingMode = "MovingObject";
             controlCenterSideMode = "Auto";
-            controlCenterSide = "";
+            controlCenterSide = null;
             textSideModeSelection.Visibility = System.Windows.Visibility.Visible;
             radioAuto.Visibility = System.Windows.Visibility.Visible;
             radioAuto.IsChecked = true;
@@ -489,7 +526,7 @@ namespace KinectTest
         private void radioAuto_Checked(object sender, RoutedEventArgs e)
         {
             controlCenterSideMode = "Auto";
-            controlCenterSide = "";
+            controlCenterSide = null;
             textSideSelection.Visibility = System.Windows.Visibility.Hidden;
             radioRight.Visibility = System.Windows.Visibility.Hidden;
             radioRight.IsChecked = false;
@@ -505,7 +542,7 @@ namespace KinectTest
         private void radioManual_Checked(object sender, RoutedEventArgs e)
         {
             controlCenterSideMode = "Manual";
-            controlCenterSide = "";
+            controlCenterSide = null;
             textSideSelection.Visibility = System.Windows.Visibility.Visible;
             radioRight.Visibility = System.Windows.Visibility.Visible;
             radioRight.IsChecked = false;
@@ -561,7 +598,7 @@ namespace KinectTest
                 }
                 else if (controlCenterSideMode == "Manual")
                 {
-                    if (controlCenterSide == "")
+                    if (controlCenterSide == null)
                     {
                         sideText.Text = "Select a side";
                         coordinatesText.Text = "";
@@ -601,6 +638,33 @@ namespace KinectTest
                 sideText.Text = "Select a tracking mode";
                 coordinatesText.Text = "";
                 hand_StateText.Text = "";
+            }
+        }
+
+        private string truncate(string source)
+        {
+            source = source.Substring(0, source.LastIndexOf(","));
+            return source;
+        }
+
+        private void sendRobotOrder(ArmTracked armTracked)
+        {
+            try
+            {
+                if (System.IO.File.Exists("MovingOrder.py"))
+                {
+                    System.IO.File.Delete("MovingOrder.py");
+                }
+                TextWriter tw = new StreamWriter("MovingOrder.py");
+                tw.WriteLine(String.Format("R.set_cartesian([[{0},{1},{2}], [0,0,1,0]])", truncate(String.Format("{0}", armTracked.getHand().X * 1000)), truncate(String.Format("{0}", armTracked.getHand().Z * 1000)), truncate(String.Format("{0}", armTracked.getHand().Y * 1000))));
+                tw.Close();
+
+                var movingOrder = py.CreateScriptSourceFromFile("MovingOrder.py");
+                movingOrder.Execute(scope);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error: " + ex.Message);
             }
         }
     }
