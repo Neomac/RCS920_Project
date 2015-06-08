@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace KinectTest.Properties {
+namespace Kinect_App.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace KinectTest.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("KinectTest.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Kinect_App.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -83,19 +83,22 @@ namespace KinectTest.Properties {
         ///  &lt;rule id=&quot;rootRule&quot;&gt;
         ///    &lt;one-of&gt;
         ///      &lt;item&gt;
-        ///        &lt;tag&gt;FORWARD&lt;/tag&gt;
+        ///        &lt;tag&gt;ROBOT&lt;/tag&gt;
         ///        &lt;one-of&gt;
-        ///          &lt;item&gt; forwards &lt;/item&gt;
-        ///          &lt;item&gt; forward &lt;/item&gt;
-        ///          &lt;item&gt; straight &lt;/item&gt;
+        ///          &lt;item&gt; robot &lt;/item&gt;
         ///        &lt;/one-of&gt;
         ///      &lt;/item&gt;
         ///      &lt;item&gt;
-        ///        &lt;tag&gt;BACKWARD&lt;/tag&gt;
+        ///        &lt;tag&gt;HOME&lt;/tag&gt;
         ///        &lt;one-of&gt;
-        ///          &lt;item&gt; backward &lt;/item&gt;
-        ///          &lt;item&gt; backwards &lt;/item&gt;
-        ///         [rest of string was truncated]&quot;;.
+        ///          &lt;item&gt; home &lt;/item&gt;
+        ///          &lt;item&gt; go home &lt;/item&gt;
+        ///          &lt;item&gt; rest &lt;/item&gt;
+        ///        &lt;/one-of&gt;
+        ///      &lt;/item&gt;
+        ///    &lt;/one-of&gt;
+        ///  &lt;/rule&gt;
+        ///&lt; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string SpeechGrammar {
             get {

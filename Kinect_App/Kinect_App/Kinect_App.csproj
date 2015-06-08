@@ -7,8 +7,8 @@
     <ProjectGuid>{1FB4BE78-E8ED-4046-BEF8-9D59128E8BFC}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>KinectTest</RootNamespace>
-    <AssemblyName>KinectTest</AssemblyName>
+    <RootNamespace>Kinect_App</RootNamespace>
+    <AssemblyName>Kinect_App</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
